@@ -1,8 +1,13 @@
 # @dreamer/middleware
 
-一个用于 Deno 的通用中间件系统，提供中间件链式调用、错误处理等功能。
+> 一个兼容 Deno 和 Bun 的通用中间件系统，提供中间件链式调用、错误处理等功能
 
-## 功能
+[![JSR](https://jsr.io/badges/@dreamer/middleware)](https://jsr.io/@dreamer/middleware)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## 🎯 功能
 
 通用中间件系统，可用于多种场景（HTTP、WebSocket、消息队列等）。
 
@@ -40,10 +45,6 @@
 - 数据管道处理
 - 事件处理链
 
-## 优先级
-
-⭐⭐⭐⭐⭐
-
 ## 架构说明
 
 - **中间件系统独立于 HTTP**，保持通用性
@@ -58,12 +59,14 @@ deno add jsr:@dreamer/middleware
 
 ## 环境兼容性
 
-- **Deno 版本**：要求 Deno 2.5 或更高版本
-- **服务端**：✅ 支持（Deno 运行时，中间件系统主要用于服务端）
+- **运行时要求**：Deno 2.5+ 或 Bun 1.0+
+- **服务端**：✅ 支持（兼容 Deno 和 Bun 运行时，中间件系统主要用于服务端）
 - **客户端**：❌ 不支持（中间件系统是服务端架构模式，客户端不需要，如需客户端请求拦截等功能，需要另外实现客户端专用库）
 - **依赖**：无外部依赖（纯 TypeScript 实现）
 
-## 使用示例
+---
+
+## 🚀 快速开始
 
 ### 基础用法
 
@@ -285,7 +288,9 @@ console.log(stats);
 chain.clearStats();
 ```
 
-### 完整示例
+---
+
+## 📚 API 文档
 
 ```typescript
 import { MiddlewareChain, matchPath, matchMethod } from "jsr:@dreamer/middleware";
@@ -590,3 +595,32 @@ interface MiddlewareStats {
 - **灵活性**：支持条件匹配、错误处理、性能监控等多种功能
 - **类型安全**：完整的 TypeScript 类型支持
 - **易用性**：简洁的 API，支持多种调用方式
+
+---
+
+## 📝 备注
+
+- **服务端专用**：中间件系统是服务端架构模式，客户端不需要
+- **统一接口**：提供统一的中间件 API 接口，降低学习成本
+- **类型安全**：完整的 TypeScript 类型支持
+- **无外部依赖**：纯 TypeScript 实现
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+---
+
+## 📄 许可证
+
+MIT License - 详见 [LICENSE.md](./LICENSE.md)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by Dreamer Team**
+
+</div>

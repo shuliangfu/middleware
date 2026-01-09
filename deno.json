@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/middleware",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "license": "MIT",
   "exports": {
     ".": "./src/mod.ts"
@@ -32,6 +32,6 @@
     }
   },
   "imports": {
-    "@dreamer/test": "jsr:@dreamer/test@^1.0.0-beta.4"
+    "@dreamer/test": "jsr:@dreamer/test@^1.0.0-beta.6"
   }
 }
