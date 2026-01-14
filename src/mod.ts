@@ -97,12 +97,12 @@ export interface MiddlewareCondition {
 interface MiddlewareRegistration<
   T extends MiddlewareContext = MiddlewareContext,
 > {
+  /** 中间件名称（必须字段，用于标识和防止重复注册） */
+  name: string;
   /** 中间件函数 */
   middleware: Middleware<T>;
   /** 匹配条件（可选） */
   condition?: MiddlewareCondition;
-  /** 中间件名称（用于调试） */
-  name?: string;
 }
 
 /**
@@ -113,8 +113,8 @@ interface ErrorMiddlewareRegistration<
 > {
   /** 错误处理中间件函数 */
   middleware: ErrorMiddleware<T>;
-  /** 中间件名称（用于调试） */
-  name?: string;
+  /** 中间件名称（必须字段，用于标识和防止重复注册） */
+  name: string;
 }
 
 /**
@@ -156,7 +156,8 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
    *
    * @param middleware 中间件函数
    * @param condition 匹配条件（可选）
-   * @param name 中间件名称（可选，用于调试）
+   * @param name 中间件名称（可选，如果未提供则使用函数名或自动生成）
+   * @throws {Error} 如果中间件名称已存在，抛出错误
    */
   use(
     middleware: Middleware<T>,
@@ -203,10 +204,21 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
       name = conditionOrMiddleware as string | undefined;
     }
 
+    // 自动生成 name（如果未提供，使用函数名或自动生成）
+    const middlewareName = name || middleware.name ||
+      `middleware-${this.middlewares.length}`;
+
+    // 检查是否重复注册
+    if (this.middlewares.some((m) => m.name === middlewareName)) {
+      throw new Error(
+        `中间件 "${middlewareName}" 已存在，不能重复注册`,
+      );
+    }
+
     this.middlewares.push({
       middleware,
       condition,
-      name: name || middleware.name || `middleware-${this.middlewares.length}`,
+      name: middlewareName,
     });
   }
 
@@ -214,13 +226,24 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
    * 注册错误处理中间件
    *
    * @param middleware 错误处理中间件函数
-   * @param name 中间件名称（可选，用于调试）
+   * @param name 中间件名称（可选，如果未提供则使用函数名或自动生成）
+   * @throws {Error} 如果中间件名称已存在，抛出错误
    */
   useError(middleware: ErrorMiddleware<T>, name?: string): void {
+    // 自动生成 name（如果未提供，使用函数名或自动生成）
+    const middlewareName = name || middleware.name ||
+      `error-middleware-${this.errorMiddlewares.length}`;
+
+    // 检查是否重复注册
+    if (this.errorMiddlewares.some((m) => m.name === middlewareName)) {
+      throw new Error(
+        `错误处理中间件 "${middlewareName}" 已存在，不能重复注册`,
+      );
+    }
+
     this.errorMiddlewares.push({
       middleware,
-      name: name || middleware.name ||
-        `error-middleware-${this.errorMiddlewares.length}`,
+      name: middlewareName,
     });
   }
 
@@ -314,7 +337,7 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
 
       const registration = matchedMiddlewares[index++];
       const middleware = registration.middleware;
-      const middlewareName = registration.name || `middleware-${index}`;
+      const middlewareName = registration.name;
 
       try {
         // 性能监控
