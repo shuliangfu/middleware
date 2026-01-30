@@ -1,6 +1,7 @@
 # @dreamer/middleware
 
-> 一个兼容 Deno 和 Bun 的通用中间件系统，提供中间件链式调用、错误处理、服务容器集成等功能
+> 一个兼容 Deno 和 Bun
+> 的通用中间件系统，提供中间件链式调用、错误处理、服务容器集成等功能
 
 [![JSR](https://jsr.io/badges/@dreamer/middleware)](https://jsr.io/@dreamer/middleware)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
@@ -33,12 +34,12 @@ bunx jsr add @dreamer/middleware
 
 ## 🌍 环境兼容性
 
-| 环境       | 版本要求           | 状态                                   |
-| ---------- | ------------------ | -------------------------------------- |
-| **Deno**   | 2.5+               | ✅ 完全支持                            |
-| **Bun**    | 1.0+               | ✅ 完全支持                            |
-| **服务端** | -                  | ✅ 支持（中间件系统主要用于服务端）    |
-| **客户端** | -                  | ❌ 不支持（中间件是服务端架构模式）    |
+| 环境       | 版本要求                 | 状态                                   |
+| ---------- | ------------------------ | -------------------------------------- |
+| **Deno**   | 2.5+                     | ✅ 完全支持                            |
+| **Bun**    | 1.0+                     | ✅ 完全支持                            |
+| **服务端** | -                        | ✅ 支持（中间件系统主要用于服务端）    |
+| **客户端** | -                        | ❌ 不支持（中间件是服务端架构模式）    |
 | **依赖**   | @dreamer/service（可选） | 📦 用于 MiddlewareManager 服务容器集成 |
 
 **注意**：@dreamer/middleware 是纯服务端库，不提供客户端子包。
@@ -209,7 +210,12 @@ chain.use(
 ### 组合条件
 
 ```typescript
-import { MiddlewareChain, combineConditions, matchPath, matchMethod } from "jsr:@dreamer/middleware";
+import {
+  combineConditions,
+  matchMethod,
+  matchPath,
+  MiddlewareChain,
+} from "jsr:@dreamer/middleware";
 
 const chain = new MiddlewareChain();
 
@@ -333,7 +339,11 @@ chain.clearStats();
 ## 📚 API 文档
 
 ```typescript
-import { MiddlewareChain, matchPath, matchMethod } from "jsr:@dreamer/middleware";
+import {
+  matchMethod,
+  matchPath,
+  MiddlewareChain,
+} from "jsr:@dreamer/middleware";
 
 // 定义上下文类型
 interface HttpContext {
@@ -448,18 +458,22 @@ const chain = new MiddlewareChain<T extends MiddlewareContext>();
 #### 方法
 
 ##### `use(middleware, condition?, name?)`
+
 注册中间件
 
 **重载**：
+
 - `use(middleware: Middleware<T>, condition?: MiddlewareCondition, name?: string): void`
 - `use(path: string, middleware: Middleware<T>, name?: string): void`
 
 **参数**：
+
 - `middleware`: 中间件函数
 - `condition`: 匹配条件（可选）
 - `name`: 中间件名称（可选，用于调试和性能监控）
 
 **示例**：
+
 ```typescript
 // 方式1：简单注册
 chain.use(async (ctx, next) => {
@@ -482,13 +496,16 @@ chain.use(
 ```
 
 ##### `useError(middleware, name?)`
+
 注册错误处理中间件
 
 **参数**：
+
 - `middleware`: 错误处理中间件函数
 - `name`: 中间件名称（可选）
 
 **示例**：
+
 ```typescript
 chain.useError(async (ctx, error, next) => {
   console.error("错误:", error);
@@ -497,80 +514,101 @@ chain.useError(async (ctx, error, next) => {
 ```
 
 ##### `execute(ctx)`
+
 执行中间件链
 
 **参数**：
+
 - `ctx`: 上下文对象
 
 **返回**：`Promise<void>`
 
 **示例**：
+
 ```typescript
 await chain.execute({ path: "/api/users" });
 ```
 
 ##### `enablePerformanceMonitoring()`
+
 启用性能监控
 
 ##### `disablePerformanceMonitoring()`
+
 禁用性能监控
 
 ##### `getStats()`
+
 获取性能统计
 
 **返回**：`MiddlewareStats[]`
 
 ##### `clearStats()`
+
 清空性能统计
 
 ##### `clear()`
+
 清空所有中间件
 
 ##### `getMiddlewareCount()`
+
 获取中间件数量
 
 ##### `getErrorMiddlewareCount()`
+
 获取错误处理中间件数量
 
 ##### `remove(name)` （新增）
+
 移除指定名称的中间件
 
 **参数**：
+
 - `name`: 中间件名称
 
 **返回**：`boolean` - 是否成功移除
 
 ##### `removeError(name)` （新增）
+
 移除指定名称的错误处理中间件
 
 ##### `getMiddleware(name)` （新增）
+
 获取指定名称的中间件函数
 
 **返回**：`Middleware<T> | undefined`
 
 ##### `getErrorMiddleware(name)` （新增）
+
 获取指定名称的错误处理中间件函数
 
 ##### `hasMiddleware(name)` （新增）
+
 检查是否存在指定名称的中间件
 
 **返回**：`boolean`
 
 ##### `hasErrorMiddleware(name)` （新增）
+
 检查是否存在指定名称的错误处理中间件
 
 ##### `listMiddlewares()` （新增）
+
 获取所有中间件名称列表
 
 **返回**：`string[]`
 
 ##### `listErrorMiddlewares()` （新增）
+
 获取所有错误处理中间件名称列表
 
 ##### `insertBefore(targetName, middleware, condition?, name?)` （新增）
+
 在指定中间件之前插入新中间件
 
 **参数**：
+
 - `targetName`: 目标中间件名称
 - `middleware`: 要插入的中间件函数
 - `condition`: 匹配条件（可选）
@@ -579,53 +617,66 @@ await chain.execute({ path: "/api/users" });
 **返回**：`boolean` - 是否成功插入
 
 ##### `insertAfter(targetName, middleware, condition?, name?)` （新增）
+
 在指定中间件之后插入新中间件
 
 ### 辅助函数
 
 #### `createMiddlewareChain<T>()`
+
 创建中间件链实例
 
 #### `createMiddleware<T>(middleware)`
+
 创建中间件辅助函数（用于类型推断）
 
 #### `matchPath(path)`
+
 路径匹配辅助函数
 
 **参数**：
+
 - `path`: 路径模式（字符串、正则表达式、函数）
 
 **返回**：`MiddlewareCondition`
 
 #### `matchMethod(method)`
+
 方法匹配辅助函数
 
 **参数**：
+
 - `method`: 方法模式（字符串、字符串数组、函数）
 
 **返回**：`MiddlewareCondition`
 
 #### `combineConditions(...conditions)`
+
 组合匹配条件
 
 **参数**：
+
 - `conditions`: 匹配条件数组
 
 **返回**：`MiddlewareCondition`
 
 #### `matchCondition(condition, ctx)` （新增）
+
 检查单个条件是否匹配上下文（共享的匹配逻辑函数）
 
 **参数**：
+
 - `condition`: 匹配条件
 - `ctx`: 上下文对象
 
 **返回**：`boolean`
 
 #### `createMiddlewareManager<T>(container, options?)` （新增）
+
 创建中间件管理器实例
 
 **参数**：
+
 - `container`: 服务容器实例
 - `options`: 配置选项（可选）
 
@@ -634,6 +685,7 @@ await chain.execute({ path: "/api/users" });
 ### 类型定义
 
 #### `MiddlewareContext`
+
 中间件上下文接口
 
 ```typescript
@@ -650,6 +702,7 @@ interface MiddlewareContext {
 ```
 
 #### `Middleware<T>`
+
 中间件函数类型
 
 ```typescript
@@ -660,6 +713,7 @@ type Middleware<T extends MiddlewareContext> = (
 ```
 
 #### `ErrorMiddleware<T>`
+
 错误处理中间件函数类型
 
 ```typescript
@@ -671,6 +725,7 @@ type ErrorMiddleware<T extends MiddlewareContext> = (
 ```
 
 #### `MiddlewareCondition`
+
 中间件匹配条件
 
 ```typescript
@@ -682,6 +737,7 @@ interface MiddlewareCondition {
 ```
 
 #### `MiddlewareStats`
+
 中间件性能统计
 
 ```typescript
@@ -711,10 +767,10 @@ new MiddlewareManager(
 
 **参数**：
 
-| 参数        | 类型                       | 说明           |
-| ----------- | -------------------------- | -------------- |
-| `container` | `ServiceContainer`         | 服务容器实例   |
-| `options`   | `MiddlewareManagerOptions` | 配置选项（可选）|
+| 参数        | 类型                       | 说明             |
+| ----------- | -------------------------- | ---------------- |
+| `container` | `ServiceContainer`         | 服务容器实例     |
+| `options`   | `MiddlewareManagerOptions` | 配置选项（可选） |
 
 **选项**：
 
@@ -733,38 +789,38 @@ new MiddlewareManager(
 
 #### 管理方法
 
-| 方法                    | 说明                     |
-| ----------------------- | ------------------------ |
-| `remove(name)`          | 移除中间件               |
-| `has(name)`             | 检查中间件是否存在       |
-| `get(name)`             | 获取中间件定义           |
-| `list()`                | 列出所有中间件名称       |
-| `listByChain(chainName)`| 按链列出中间件           |
-| `listChains()`          | 列出所有中间件链名称     |
+| 方法                     | 说明                 |
+| ------------------------ | -------------------- |
+| `remove(name)`           | 移除中间件           |
+| `has(name)`              | 检查中间件是否存在   |
+| `get(name)`              | 获取中间件定义       |
+| `list()`                 | 列出所有中间件名称   |
+| `listByChain(chainName)` | 按链列出中间件       |
+| `listChains()`           | 列出所有中间件链名称 |
 
 #### 执行方法
 
-| 方法                          | 说明                   |
-| ----------------------------- | ---------------------- |
-| `execute(ctx, chainName?)`    | 执行指定中间件链       |
-| `getChain(chainName)`         | 获取中间件链实例       |
+| 方法                       | 说明             |
+| -------------------------- | ---------------- |
+| `execute(ctx, chainName?)` | 执行指定中间件链 |
+| `getChain(chainName)`      | 获取中间件链实例 |
 
 #### 统计方法
 
-| 方法                          | 说明             |
-| ----------------------------- | ---------------- |
-| `getStats(chainName?)`        | 获取性能统计     |
-| `clearStats(chainName?)`      | 清空性能统计     |
-| `getMiddlewareCount()`        | 获取中间件总数   |
-| `getChainCount()`             | 获取中间件链总数 |
+| 方法                     | 说明             |
+| ------------------------ | ---------------- |
+| `getStats(chainName?)`   | 获取性能统计     |
+| `clearStats(chainName?)` | 清空性能统计     |
+| `getMiddlewareCount()`   | 获取中间件总数   |
+| `getChainCount()`        | 获取中间件链总数 |
 
 #### 清理方法
 
-| 方法                          | 说明               |
-| ----------------------------- | ------------------ |
-| `clearChain(chainName)`       | 清空指定链         |
-| `clear()`                     | 清空所有中间件     |
-| `dispose()`                   | 销毁管理器         |
+| 方法                    | 说明           |
+| ----------------------- | -------------- |
+| `clearChain(chainName)` | 清空指定链     |
+| `clear()`               | 清空所有中间件 |
+| `dispose()`             | 销毁管理器     |
 
 **示例**：
 
@@ -778,7 +834,7 @@ const manager = new MiddlewareManager(container);
 // 注册中间件
 manager.register({
   name: "logger",
-  priority: 10,  // 优先级，数字越小越先执行
+  priority: 10, // 优先级，数字越小越先执行
   handler: async (ctx, next) => {
     console.log("Request:", ctx.path);
     await next();
@@ -788,7 +844,7 @@ manager.register({
 manager.register({
   name: "auth",
   priority: 20,
-  condition: { path: "/api" },  // 条件匹配
+  condition: { path: "/api" }, // 条件匹配
   handler: async (ctx, next) => {
     // 认证逻辑
     await next();
@@ -803,11 +859,11 @@ await manager.execute({ path: "/api/users" });
 
 ```typescript
 interface MiddlewareDefinition<T extends MiddlewareContext> {
-  name: string;              // 中间件名称（唯一标识）
-  handler: Middleware<T>;    // 中间件函数
-  condition?: MiddlewareCondition;  // 匹配条件（可选）
-  priority?: number;         // 优先级（默认 100）
-  chain?: string;            // 中间件链名称（默认 "default"）
+  name: string; // 中间件名称（唯一标识）
+  handler: Middleware<T>; // 中间件函数
+  condition?: MiddlewareCondition; // 匹配条件（可选）
+  priority?: number; // 优先级（默认 100）
+  chain?: string; // 中间件链名称（默认 "default"）
 }
 ```
 
@@ -849,11 +905,13 @@ interface MiddlewareDefinition<T extends MiddlewareContext> {
 
 1. **服务端专用**：中间件系统是服务端架构模式，客户端不需要。
 
-2. **ctx.error 停止执行**：当设置 `ctx.error` 后，`next()` 调用会自动跳过后续中间件。
+2. **ctx.error 停止执行**：当设置 `ctx.error` 后，`next()`
+   调用会自动跳过后续中间件。
 
 3. **中间件名称唯一**：每个中间件必须有唯一的名称，重复注册会抛出错误。
 
-4. **优先级排序**：使用 `registerAll()` 时，中间件会按 `priority` 字段排序（数字越小越先执行）。
+4. **优先级排序**：使用 `registerAll()` 时，中间件会按 `priority`
+   字段排序（数字越小越先执行）。
 
 5. **多链隔离**：不同的中间件链（chain）是完全隔离的，互不影响。
 

@@ -261,7 +261,9 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
       middleware = middlewareOrPath;
       condition = conditionOrMiddleware as MiddlewareCondition;
       name = nameOrCondition as string | undefined;
-    } else if (conditionOrMiddleware === undefined && nameOrCondition !== undefined) {
+    } else if (
+      conditionOrMiddleware === undefined && nameOrCondition !== undefined
+    ) {
       // use(middleware, undefined, name) - 明确传入 undefined 作为条件
       middleware = middlewareOrPath;
       condition = undefined;
@@ -624,7 +626,9 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
     condition?: MiddlewareCondition,
     name?: string,
   ): boolean {
-    const targetIndex = this.middlewares.findIndex((m) => m.name === targetName);
+    const targetIndex = this.middlewares.findIndex((m) =>
+      m.name === targetName
+    );
     if (targetIndex === -1) {
       return false;
     }
@@ -663,7 +667,9 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
     condition?: MiddlewareCondition,
     name?: string,
   ): boolean {
-    const targetIndex = this.middlewares.findIndex((m) => m.name === targetName);
+    const targetIndex = this.middlewares.findIndex((m) =>
+      m.name === targetName
+    );
     if (targetIndex === -1) {
       return false;
     }

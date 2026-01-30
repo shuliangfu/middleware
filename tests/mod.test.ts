@@ -101,9 +101,13 @@ describe("MiddlewareChain", () => {
 
       // 使用 use(middleware, condition, name) 形式指定名称
       // 注意：condition 需要是对象，不能是 undefined
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "test-middleware");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "test-middleware",
+      );
 
       await chain.execute({});
       const stats = chain.getStats();
@@ -436,9 +440,13 @@ describe("MiddlewareChain", () => {
 
       // 使用 use(middleware, condition, name) 形式指定名称
       // 注意：condition 需要是对象，不能是 undefined
-      chain.use(async () => {
-        throw new Error("测试错误");
-      }, {}, "error-middleware");
+      chain.use(
+        async () => {
+          throw new Error("测试错误");
+        },
+        {},
+        "error-middleware",
+      );
 
       chain.useError(async (ctx, error, next) => {
         await next();
@@ -634,10 +642,14 @@ describe("MiddlewareChain", () => {
       const chain = new MiddlewareChain();
       let executed = false;
 
-      chain.use(async (ctx, next) => {
-        executed = true;
-        await next();
-      }, {}, "test-middleware");
+      chain.use(
+        async (ctx, next) => {
+          executed = true;
+          await next();
+        },
+        {},
+        "test-middleware",
+      );
 
       expect(chain.getMiddlewareCount()).toBe(1);
 
@@ -673,7 +685,10 @@ describe("MiddlewareChain", () => {
 
     it("应该获取中间件", () => {
       const chain = new MiddlewareChain();
-      const middleware = async (ctx: MiddlewareContext, next: () => Promise<void>) => {
+      const middleware = async (
+        ctx: MiddlewareContext,
+        next: () => Promise<void>,
+      ) => {
         await next();
       };
 
@@ -708,9 +723,13 @@ describe("MiddlewareChain", () => {
     it("应该检查中间件是否存在", () => {
       const chain = new MiddlewareChain();
 
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "existing-middleware");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "existing-middleware",
+      );
 
       expect(chain.hasMiddleware("existing-middleware")).toBeTruthy();
       expect(chain.hasMiddleware("non-existent")).toBeFalsy();
@@ -730,17 +749,29 @@ describe("MiddlewareChain", () => {
     it("应该列出所有中间件名称", () => {
       const chain = new MiddlewareChain();
 
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "middleware-a");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "middleware-a",
+      );
 
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "middleware-b");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "middleware-b",
+      );
 
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "middleware-c");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "middleware-c",
+      );
 
       const names = chain.listMiddlewares();
       expect(names).toEqual(["middleware-a", "middleware-b", "middleware-c"]);
@@ -767,21 +798,34 @@ describe("MiddlewareChain", () => {
       const chain = new MiddlewareChain();
       const order: string[] = [];
 
-      chain.use(async (ctx, next) => {
-        order.push("first");
-        await next();
-      }, {}, "first");
+      chain.use(
+        async (ctx, next) => {
+          order.push("first");
+          await next();
+        },
+        {},
+        "first",
+      );
 
-      chain.use(async (ctx, next) => {
-        order.push("last");
-        await next();
-      }, {}, "last");
+      chain.use(
+        async (ctx, next) => {
+          order.push("last");
+          await next();
+        },
+        {},
+        "last",
+      );
 
       // 在 last 之前插入
-      const inserted = chain.insertBefore("last", async (ctx, next) => {
-        order.push("middle");
-        await next();
-      }, undefined, "middle");
+      const inserted = chain.insertBefore(
+        "last",
+        async (ctx, next) => {
+          order.push("middle");
+          await next();
+        },
+        undefined,
+        "middle",
+      );
 
       expect(inserted).toBeTruthy();
       expect(chain.listMiddlewares()).toEqual(["first", "middle", "last"]);
@@ -794,21 +838,34 @@ describe("MiddlewareChain", () => {
       const chain = new MiddlewareChain();
       const order: string[] = [];
 
-      chain.use(async (ctx, next) => {
-        order.push("first");
-        await next();
-      }, {}, "first");
+      chain.use(
+        async (ctx, next) => {
+          order.push("first");
+          await next();
+        },
+        {},
+        "first",
+      );
 
-      chain.use(async (ctx, next) => {
-        order.push("last");
-        await next();
-      }, {}, "last");
+      chain.use(
+        async (ctx, next) => {
+          order.push("last");
+          await next();
+        },
+        {},
+        "last",
+      );
 
       // 在 first 之后插入
-      const inserted = chain.insertAfter("first", async (ctx, next) => {
-        order.push("middle");
-        await next();
-      }, undefined, "middle");
+      const inserted = chain.insertAfter(
+        "first",
+        async (ctx, next) => {
+          order.push("middle");
+          await next();
+        },
+        undefined,
+        "middle",
+      );
 
       expect(inserted).toBeTruthy();
       expect(chain.listMiddlewares()).toEqual(["first", "middle", "last"]);
@@ -840,19 +897,32 @@ describe("MiddlewareChain", () => {
     it("应该抛出错误如果插入的中间件名称已存在", () => {
       const chain = new MiddlewareChain();
 
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "existing");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "existing",
+      );
 
-      chain.use(async (ctx, next) => {
-        await next();
-      }, {}, "target");
+      chain.use(
+        async (ctx, next) => {
+          await next();
+        },
+        {},
+        "target",
+      );
 
       let error: Error | null = null;
       try {
-        chain.insertBefore("target", async (ctx, next) => {
-          await next();
-        }, undefined, "existing");
+        chain.insertBefore(
+          "target",
+          async (ctx, next) => {
+            await next();
+          },
+          undefined,
+          "existing",
+        );
       } catch (e) {
         error = e as Error;
       }
@@ -877,7 +947,8 @@ describe("MiddlewareChain", () => {
 
     it("应该匹配函数条件", () => {
       const condition = { path: (p: string) => p.length > 10 };
-      expect(matchCondition(condition, { path: "/long/path/here" })).toBeTruthy();
+      expect(matchCondition(condition, { path: "/long/path/here" }))
+        .toBeTruthy();
       expect(matchCondition(condition, { path: "/short" })).toBeFalsy();
     });
 

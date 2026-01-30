@@ -2,13 +2,13 @@
 
 ## 📋 测试概览
 
-| 项目             | 值                               |
-| ---------------- | -------------------------------- |
-| 测试库版本       | 1.0.0-beta.3                     |
-| 运行时适配器版本 | @dreamer/service@^1.0.0-beta.3   |
-| 测试框架         | @dreamer/test@^1.0.0-beta.39     |
-| 测试时间         | 2026-01-30                       |
-| 测试环境         | Deno 2.x / Bun 1.x               |
+| 项目             | 值                             |
+| ---------------- | ------------------------------ |
+| 测试库版本       | 1.0.0-beta.3                   |
+| 运行时适配器版本 | @dreamer/service@^1.0.0-beta.3 |
+| 测试框架         | @dreamer/test@^1.0.0-beta.39   |
+| 测试时间         | 2026-01-30                     |
+| 测试环境         | Deno 2.x / Bun 1.x             |
 
 ---
 
@@ -16,13 +16,13 @@
 
 ### 总体统计
 
-| 指标         | 数值 |
-| ------------ | ---- |
-| 测试文件数   | 1    |
-| 测试用例总数 | 75   |
-| 通过用例数   | 75   |
-| 失败用例数   | 0    |
-| 通过率       | 100% |
+| 指标         | 数值  |
+| ------------ | ----- |
+| 测试文件数   | 1     |
+| 测试用例总数 | 75    |
+| 通过用例数   | 75    |
+| 失败用例数   | 0     |
+| 通过率       | 100%  |
 | 测试执行时间 | ~70ms |
 
 ### 测试文件统计
@@ -170,80 +170,80 @@
 
 #### MiddlewareChain 类
 
-| 方法                          | 覆盖状态 |
-| ----------------------------- | -------- |
-| use()                         | ✅       |
-| useError()                    | ✅       |
-| execute()                     | ✅       |
-| enablePerformanceMonitoring() | ✅       |
-| disablePerformanceMonitoring()| ✅       |
-| getStats()                    | ✅       |
-| clearStats()                  | ✅       |
-| clear()                       | ✅       |
-| getMiddlewareCount()          | ✅       |
-| getErrorMiddlewareCount()     | ✅       |
-| remove()                      | ✅       |
-| removeError()                 | ✅       |
-| getMiddleware()               | ✅       |
-| getErrorMiddleware()          | ✅       |
-| hasMiddleware()               | ✅       |
-| hasErrorMiddleware()          | ✅       |
-| listMiddlewares()             | ✅       |
-| listErrorMiddlewares()        | ✅       |
-| insertBefore()                | ✅       |
-| insertAfter()                 | ✅       |
+| 方法                           | 覆盖状态 |
+| ------------------------------ | -------- |
+| use()                          | ✅       |
+| useError()                     | ✅       |
+| execute()                      | ✅       |
+| enablePerformanceMonitoring()  | ✅       |
+| disablePerformanceMonitoring() | ✅       |
+| getStats()                     | ✅       |
+| clearStats()                   | ✅       |
+| clear()                        | ✅       |
+| getMiddlewareCount()           | ✅       |
+| getErrorMiddlewareCount()      | ✅       |
+| remove()                       | ✅       |
+| removeError()                  | ✅       |
+| getMiddleware()                | ✅       |
+| getErrorMiddleware()           | ✅       |
+| hasMiddleware()                | ✅       |
+| hasErrorMiddleware()           | ✅       |
+| listMiddlewares()              | ✅       |
+| listErrorMiddlewares()         | ✅       |
+| insertBefore()                 | ✅       |
+| insertAfter()                  | ✅       |
 
 #### MiddlewareManager 类
 
-| 方法                          | 覆盖状态 |
-| ----------------------------- | -------- |
-| register()                    | ✅       |
-| registerError()               | ✅       |
-| registerAll()                 | ✅       |
-| remove()                      | ✅       |
-| has()                         | ✅       |
-| get()                         | ✅       |
-| list()                        | ✅       |
-| listByChain()                 | ✅       |
-| listChains()                  | ✅       |
-| execute()                     | ✅       |
-| getChain()                    | ✅       |
-| getStats()                    | ✅       |
-| clearStats()                  | ✅       |
-| clearChain()                  | ✅       |
-| clear()                       | ✅       |
-| enablePerformanceMonitoring() | ✅       |
-| disablePerformanceMonitoring()| ✅       |
-| getMiddlewareCount()          | ✅       |
-| getChainCount()               | ✅       |
-| dispose()                     | ✅       |
+| 方法                           | 覆盖状态 |
+| ------------------------------ | -------- |
+| register()                     | ✅       |
+| registerError()                | ✅       |
+| registerAll()                  | ✅       |
+| remove()                       | ✅       |
+| has()                          | ✅       |
+| get()                          | ✅       |
+| list()                         | ✅       |
+| listByChain()                  | ✅       |
+| listChains()                   | ✅       |
+| execute()                      | ✅       |
+| getChain()                     | ✅       |
+| getStats()                     | ✅       |
+| clearStats()                   | ✅       |
+| clearChain()                   | ✅       |
+| clear()                        | ✅       |
+| enablePerformanceMonitoring()  | ✅       |
+| disablePerformanceMonitoring() | ✅       |
+| getMiddlewareCount()           | ✅       |
+| getChainCount()                | ✅       |
+| dispose()                      | ✅       |
 
 #### 辅助函数
 
-| 函数                    | 覆盖状态 |
-| ----------------------- | -------- |
-| createMiddlewareChain() | ✅       |
-| createMiddleware()      | ✅       |
-| matchCondition()        | ✅       |
-| matchPath()             | ✅       |
-| matchMethod()           | ✅       |
-| combineConditions()     | ✅       |
-| createMiddlewareManager() | ✅     |
+| 函数                      | 覆盖状态 |
+| ------------------------- | -------- |
+| createMiddlewareChain()   | ✅       |
+| createMiddleware()        | ✅       |
+| matchCondition()          | ✅       |
+| matchPath()               | ✅       |
+| matchMethod()             | ✅       |
+| combineConditions()       | ✅       |
+| createMiddlewareManager() | ✅       |
 
 ### 边界情况覆盖
 
-| 边界情况                 | 覆盖状态 |
-| ------------------------ | -------- |
-| 空中间件链               | ✅       |
-| 不存在的中间件           | ✅       |
-| 重复注册                 | ✅       |
-| 中间件执行顺序           | ✅       |
-| ctx.error 停止执行       | ✅       |
-| 条件不匹配时跳过         | ✅       |
-| 多链隔离                 | ✅       |
-| 优先级排序               | ✅       |
-| 插入位置验证             | ✅       |
-| 名称冲突检测             | ✅       |
+| 边界情况           | 覆盖状态 |
+| ------------------ | -------- |
+| 空中间件链         | ✅       |
+| 不存在的中间件     | ✅       |
+| 重复注册           | ✅       |
+| 中间件执行顺序     | ✅       |
+| ctx.error 停止执行 | ✅       |
+| 条件不匹配时跳过   | ✅       |
+| 多链隔离           | ✅       |
+| 优先级排序         | ✅       |
+| 插入位置验证       | ✅       |
+| 名称冲突检测       | ✅       |
 
 ### 错误处理覆盖
 
@@ -260,7 +260,9 @@
 ## 💡 优点
 
 1. **全面覆盖**: 所有 47 个公共 API 方法都有对应的测试用例
-2. **新功能完整**: 新增的 remove、getMiddleware、hasMiddleware、listMiddlewares、insertBefore、insertAfter 方法都有测试
+2. **新功能完整**: 新增的
+   remove、getMiddleware、hasMiddleware、listMiddlewares、insertBefore、insertAfter
+   方法都有测试
 3. **MiddlewareManager**: 完整测试了通过服务容器管理中间件的功能
 4. **多链支持**: 测试了多个命名中间件链的隔离和管理
 5. **优先级排序**: 测试了批量注册时按优先级排序的功能
@@ -271,7 +273,8 @@
 
 ## 📊 结论
 
-`@dreamer/middleware` 中间件库的测试覆盖全面，所有核心功能和新增功能都有对应的测试用例。
+`@dreamer/middleware`
+中间件库的测试覆盖全面，所有核心功能和新增功能都有对应的测试用例。
 
 ### 测试质量评估
 
