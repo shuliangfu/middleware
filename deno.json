@@ -32,7 +32,7 @@
     }
   },
   "imports": {
-    "@dreamer/service": "jsr:@dreamer/service@^1.0.0-beta.3",
+    "@dreamer/service": "jsr:@dreamer/service@^1.0.0-beta.4",
     "@dreamer/test": "jsr:@dreamer/test@^1.0.0-beta.39"
   },
   "nodeModulesDir": "auto"

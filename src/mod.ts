@@ -36,6 +36,8 @@
  * ```
  */
 
+import type { ServiceContainer } from "@dreamer/service";
+
 /**
  * 中间件上下文接口
  * 可以扩展以包含特定场景的数据（如 HTTP 请求、WebSocket 连接等）
@@ -763,8 +765,6 @@ export function combineConditions(
 // ============================================================================
 // MiddlewareManager - 中间件管理器（通过服务容器管理）
 // ============================================================================
-
-import type { ServiceContainer } from "@dreamer/service";
 
 /**
  * 中间件管理器配置选项
