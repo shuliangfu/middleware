@@ -1,68 +1,108 @@
 # @dreamer/middleware
 
-> 一个兼容 Deno 和 Bun 的通用中间件系统，提供中间件链式调用、错误处理等功能
+> 一个兼容 Deno 和 Bun 的通用中间件系统，提供中间件链式调用、错误处理、服务容器集成等功能
 
 [![JSR](https://jsr.io/badges/@dreamer/middleware)](https://jsr.io/@dreamer/middleware)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
+[![Tests](https://img.shields.io/badge/tests-75%20passed-brightgreen)](./TEST_REPORT.md)
 
 ---
 
 ## 🎯 功能
 
-通用中间件系统，可用于多种场景（HTTP、WebSocket、消息队列等）。
+通用中间件系统，可用于多种场景（HTTP、WebSocket、消息队列等）。支持通过
+`MiddlewareManager` 与 `@dreamer/service` 服务容器集成，统一管理多个中间件链。
 
-## 特性
+---
+
+## 📦 安装
+
+### Deno
+
+```bash
+deno add jsr:@dreamer/middleware
+```
+
+### Bun
+
+```bash
+bunx jsr add @dreamer/middleware
+```
+
+---
+
+## 🌍 环境兼容性
+
+| 环境       | 版本要求           | 状态                                   |
+| ---------- | ------------------ | -------------------------------------- |
+| **Deno**   | 2.5+               | ✅ 完全支持                            |
+| **Bun**    | 1.0+               | ✅ 完全支持                            |
+| **服务端** | -                  | ✅ 支持（中间件系统主要用于服务端）    |
+| **客户端** | -                  | ❌ 不支持（中间件是服务端架构模式）    |
+| **依赖**   | @dreamer/service（可选） | 📦 用于 MiddlewareManager 服务容器集成 |
+
+**注意**：@dreamer/middleware 是纯服务端库，不提供客户端子包。
+
+---
+
+## ✨ 特性
 
 - **中间件链式调用**：
   - 中间件注册和执行
   - 中间件链构建
   - 中间件执行顺序控制
   - 异步中间件支持
+
 - **中间件类型**：
   - 请求处理中间件
   - 错误处理中间件
   - 条件中间件（路径匹配、方法匹配等）
   - 组合中间件（多个中间件组合）
+
 - **中间件上下文**：
   - 上下文对象传递
   - 上下文扩展和修改
   - 中间件间数据共享
+  - ctx.error 设置后自动停止后续中间件执行
+
+- **中间件管理**（新增）：
+  - 移除中间件：`remove(name)`
+  - 查询中间件：`getMiddleware(name)`、`hasMiddleware(name)`
+  - 列出中间件：`listMiddlewares()`
+  - 插入中间件：`insertBefore()`、`insertAfter()`
+
 - **高级功能**：
   - 中间件跳过（条件执行）
   - 中间件错误捕获和处理
   - 中间件性能监控
   - 中间件调试工具
 
-## 依赖
+- **MiddlewareManager**（新增）：
+  - 通过服务容器统一管理中间件
+  - 支持多个命名中间件链
+  - 中间件优先级排序
+  - 批量注册中间件
+  - 自动将中间件链注册到服务容器
 
-无（独立库）
+---
 
-## 使用场景
+## 🎯 使用场景
 
 - HTTP 请求处理（配合 @dreamer/http）
 - WebSocket 连接处理（配合 @dreamer/websocket）
 - 消息队列处理（配合 @dreamer/queue）
 - 数据管道处理
 - 事件处理链
+- 微服务网关中间件管理
 
-## 架构说明
+---
+
+## 📐 架构说明
 
 - **中间件系统独立于 HTTP**，保持通用性
 - HTTP 库依赖中间件库来实现中间件功能
 - 这样设计更灵活，中间件系统可以用于多种场景
-
-## 安装
-
-```bash
-deno add jsr:@dreamer/middleware
-```
-
-## 环境兼容性
-
-- **运行时要求**：Deno 2.6+ 或 Bun 1.3.5
-- **服务端**：✅ 支持（兼容 Deno 和 Bun 运行时，中间件系统主要用于服务端）
-- **客户端**：❌ 不支持（中间件系统是服务端架构模式，客户端不需要，如需客户端请求拦截等功能，需要另外实现客户端专用库）
-- **依赖**：无外部依赖（纯 TypeScript 实现）
+- **MiddlewareManager** 提供与服务容器的集成，类似于 PluginManager
 
 ---
 
@@ -492,6 +532,55 @@ await chain.execute({ path: "/api/users" });
 ##### `getErrorMiddlewareCount()`
 获取错误处理中间件数量
 
+##### `remove(name)` （新增）
+移除指定名称的中间件
+
+**参数**：
+- `name`: 中间件名称
+
+**返回**：`boolean` - 是否成功移除
+
+##### `removeError(name)` （新增）
+移除指定名称的错误处理中间件
+
+##### `getMiddleware(name)` （新增）
+获取指定名称的中间件函数
+
+**返回**：`Middleware<T> | undefined`
+
+##### `getErrorMiddleware(name)` （新增）
+获取指定名称的错误处理中间件函数
+
+##### `hasMiddleware(name)` （新增）
+检查是否存在指定名称的中间件
+
+**返回**：`boolean`
+
+##### `hasErrorMiddleware(name)` （新增）
+检查是否存在指定名称的错误处理中间件
+
+##### `listMiddlewares()` （新增）
+获取所有中间件名称列表
+
+**返回**：`string[]`
+
+##### `listErrorMiddlewares()` （新增）
+获取所有错误处理中间件名称列表
+
+##### `insertBefore(targetName, middleware, condition?, name?)` （新增）
+在指定中间件之前插入新中间件
+
+**参数**：
+- `targetName`: 目标中间件名称
+- `middleware`: 要插入的中间件函数
+- `condition`: 匹配条件（可选）
+- `name`: 新中间件名称（可选）
+
+**返回**：`boolean` - 是否成功插入
+
+##### `insertAfter(targetName, middleware, condition?, name?)` （新增）
+在指定中间件之后插入新中间件
+
 ### 辅助函数
 
 #### `createMiddlewareChain<T>()`
@@ -523,6 +612,24 @@ await chain.execute({ path: "/api/users" });
 - `conditions`: 匹配条件数组
 
 **返回**：`MiddlewareCondition`
+
+#### `matchCondition(condition, ctx)` （新增）
+检查单个条件是否匹配上下文（共享的匹配逻辑函数）
+
+**参数**：
+- `condition`: 匹配条件
+- `ctx`: 上下文对象
+
+**返回**：`boolean`
+
+#### `createMiddlewareManager<T>(container, options?)` （新增）
+创建中间件管理器实例
+
+**参数**：
+- `container`: 服务容器实例
+- `options`: 配置选项（可选）
+
+**返回**：`MiddlewareManager<T>`
 
 ### 类型定义
 
@@ -589,21 +696,170 @@ interface MiddlewareStats {
 }
 ```
 
-## 设计原则
+### MiddlewareManager 类
+
+中间件管理器类，通过服务容器管理多个中间件链。
+
+#### 构造函数
+
+```typescript
+new MiddlewareManager(
+  container: ServiceContainer,
+  options?: MiddlewareManagerOptions
+)
+```
+
+**参数**：
+
+| 参数        | 类型                       | 说明           |
+| ----------- | -------------------------- | -------------- |
+| `container` | `ServiceContainer`         | 服务容器实例   |
+| `options`   | `MiddlewareManagerOptions` | 配置选项（可选）|
+
+**选项**：
+
+| 选项                          | 类型      | 默认值  | 说明             |
+| ----------------------------- | --------- | ------- | ---------------- |
+| `enablePerformanceMonitoring` | `boolean` | `false` | 是否启用性能监控 |
+| `continueOnError`             | `boolean` | `true`  | 是否在错误时继续 |
+
+#### 注册方法
+
+| 方法                        | 说明                           |
+| --------------------------- | ------------------------------ |
+| `register(definition)`      | 注册中间件                     |
+| `registerError(definition)` | 注册错误处理中间件             |
+| `registerAll(definitions)`  | 批量注册中间件（按优先级排序） |
+
+#### 管理方法
+
+| 方法                    | 说明                     |
+| ----------------------- | ------------------------ |
+| `remove(name)`          | 移除中间件               |
+| `has(name)`             | 检查中间件是否存在       |
+| `get(name)`             | 获取中间件定义           |
+| `list()`                | 列出所有中间件名称       |
+| `listByChain(chainName)`| 按链列出中间件           |
+| `listChains()`          | 列出所有中间件链名称     |
+
+#### 执行方法
+
+| 方法                          | 说明                   |
+| ----------------------------- | ---------------------- |
+| `execute(ctx, chainName?)`    | 执行指定中间件链       |
+| `getChain(chainName)`         | 获取中间件链实例       |
+
+#### 统计方法
+
+| 方法                          | 说明             |
+| ----------------------------- | ---------------- |
+| `getStats(chainName?)`        | 获取性能统计     |
+| `clearStats(chainName?)`      | 清空性能统计     |
+| `getMiddlewareCount()`        | 获取中间件总数   |
+| `getChainCount()`             | 获取中间件链总数 |
+
+#### 清理方法
+
+| 方法                          | 说明               |
+| ----------------------------- | ------------------ |
+| `clearChain(chainName)`       | 清空指定链         |
+| `clear()`                     | 清空所有中间件     |
+| `dispose()`                   | 销毁管理器         |
+
+**示例**：
+
+```typescript
+import { ServiceContainer } from "@dreamer/service";
+import { MiddlewareManager } from "@dreamer/middleware";
+
+const container = new ServiceContainer();
+const manager = new MiddlewareManager(container);
+
+// 注册中间件
+manager.register({
+  name: "logger",
+  priority: 10,  // 优先级，数字越小越先执行
+  handler: async (ctx, next) => {
+    console.log("Request:", ctx.path);
+    await next();
+  },
+});
+
+manager.register({
+  name: "auth",
+  priority: 20,
+  condition: { path: "/api" },  // 条件匹配
+  handler: async (ctx, next) => {
+    // 认证逻辑
+    await next();
+  },
+});
+
+// 执行中间件链
+await manager.execute({ path: "/api/users" });
+```
+
+### MiddlewareDefinition 接口
+
+```typescript
+interface MiddlewareDefinition<T extends MiddlewareContext> {
+  name: string;              // 中间件名称（唯一标识）
+  handler: Middleware<T>;    // 中间件函数
+  condition?: MiddlewareCondition;  // 匹配条件（可选）
+  priority?: number;         // 优先级（默认 100）
+  chain?: string;            // 中间件链名称（默认 "default"）
+}
+```
+
+---
+
+## 🔧 设计原则
 
 - **通用性**：中间件系统独立于 HTTP，可用于多种场景
 - **灵活性**：支持条件匹配、错误处理、性能监控等多种功能
 - **类型安全**：完整的 TypeScript 类型支持
 - **易用性**：简洁的 API，支持多种调用方式
+- **服务容器集成**：MiddlewareManager 支持与 @dreamer/service 集成
 
 ---
 
-## 📝 备注
+## 📊 测试报告
 
-- **服务端专用**：中间件系统是服务端架构模式，客户端不需要
-- **统一接口**：提供统一的中间件 API 接口，降低学习成本
-- **类型安全**：完整的 TypeScript 类型支持
-- **无外部依赖**：纯 TypeScript 实现
+| 指标         | 数值       |
+| ------------ | ---------- |
+| 测试时间     | 2026-01-30 |
+| 测试文件数   | 1          |
+| 测试用例总数 | 75         |
+| 通过率       | 100%       |
+| 执行时间     | ~70ms      |
+
+**测试覆盖**：
+
+- ✅ 所有公共 API 方法（47 个）
+- ✅ MiddlewareChain 全部功能
+- ✅ MiddlewareManager 全部功能
+- ✅ 边界情况（10 种）
+- ✅ 错误处理场景（5 种）
+
+详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)。
+
+---
+
+## 📝 注意事项
+
+1. **服务端专用**：中间件系统是服务端架构模式，客户端不需要。
+
+2. **ctx.error 停止执行**：当设置 `ctx.error` 后，`next()` 调用会自动跳过后续中间件。
+
+3. **中间件名称唯一**：每个中间件必须有唯一的名称，重复注册会抛出错误。
+
+4. **优先级排序**：使用 `registerAll()` 时，中间件会按 `priority` 字段排序（数字越小越先执行）。
+
+5. **多链隔离**：不同的中间件链（chain）是完全隔离的，互不影响。
+
+6. **服务容器集成**：MiddlewareManager 会自动将自身和中间件链注册到服务容器。
+
+7. **类型安全**：完整的 TypeScript 类型支持，支持泛型上下文类型。
 
 ---
 

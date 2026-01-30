@@ -3,14 +3,18 @@
  */
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
+import { ServiceContainer } from "@dreamer/service";
 import {
   combineConditions,
   createMiddleware,
   createMiddlewareChain,
+  createMiddlewareManager,
+  matchCondition,
   matchMethod,
   matchPath,
   MiddlewareChain,
   MiddlewareContext,
+  MiddlewareManager,
 } from "../src/mod.ts";
 
 describe("MiddlewareChain", () => {
@@ -389,12 +393,8 @@ describe("MiddlewareChain", () => {
       });
 
       await chain.execute({});
-      // 注意：当前实现中，ctx.error 不会阻止后续中间件执行
-      // 只有在中间件抛出异常时才会停止
-      // 这个测试可能需要根据实际行为调整
-      // 暂时注释掉，因为当前实现不支持通过 ctx.error 停止执行
-      // expect(secondExecuted).toBeFalsy();
-      expect(secondExecuted).toBeTruthy(); // 当前实现会继续执行
+      // 新实现：ctx.error 设置后，next() 会跳过后续中间件
+      expect(secondExecuted).toBeFalsy();
     });
   });
 
@@ -626,6 +626,683 @@ describe("MiddlewareChain", () => {
       executed = false;
       await chain.execute({ path: "/other", method: "GET" });
       expect(executed).toBeFalsy();
+    });
+  });
+
+  describe("中间件管理", () => {
+    it("应该移除中间件", async () => {
+      const chain = new MiddlewareChain();
+      let executed = false;
+
+      chain.use(async (ctx, next) => {
+        executed = true;
+        await next();
+      }, {}, "test-middleware");
+
+      expect(chain.getMiddlewareCount()).toBe(1);
+
+      // 移除中间件
+      const removed = chain.remove("test-middleware");
+      expect(removed).toBeTruthy();
+      expect(chain.getMiddlewareCount()).toBe(0);
+
+      // 执行后不应该触发已移除的中间件
+      await chain.execute({});
+      expect(executed).toBeFalsy();
+    });
+
+    it("应该返回 false 如果移除不存在的中间件", () => {
+      const chain = new MiddlewareChain();
+      const removed = chain.remove("non-existent");
+      expect(removed).toBeFalsy();
+    });
+
+    it("应该移除错误处理中间件", () => {
+      const chain = new MiddlewareChain();
+
+      chain.useError(async (ctx, error, next) => {
+        await next();
+      }, "error-handler");
+
+      expect(chain.getErrorMiddlewareCount()).toBe(1);
+
+      const removed = chain.removeError("error-handler");
+      expect(removed).toBeTruthy();
+      expect(chain.getErrorMiddlewareCount()).toBe(0);
+    });
+
+    it("应该获取中间件", () => {
+      const chain = new MiddlewareChain();
+      const middleware = async (ctx: MiddlewareContext, next: () => Promise<void>) => {
+        await next();
+      };
+
+      chain.use(middleware, {}, "my-middleware");
+
+      const retrieved = chain.getMiddleware("my-middleware");
+      expect(retrieved).toBe(middleware);
+    });
+
+    it("应该返回 undefined 如果中间件不存在", () => {
+      const chain = new MiddlewareChain();
+      const retrieved = chain.getMiddleware("non-existent");
+      expect(retrieved).toBeUndefined();
+    });
+
+    it("应该获取错误处理中间件", () => {
+      const chain = new MiddlewareChain();
+      const errorMiddleware = async (
+        ctx: MiddlewareContext,
+        error: Error,
+        next: () => Promise<void>,
+      ) => {
+        await next();
+      };
+
+      chain.useError(errorMiddleware, "my-error-handler");
+
+      const retrieved = chain.getErrorMiddleware("my-error-handler");
+      expect(retrieved).toBe(errorMiddleware);
+    });
+
+    it("应该检查中间件是否存在", () => {
+      const chain = new MiddlewareChain();
+
+      chain.use(async (ctx, next) => {
+        await next();
+      }, {}, "existing-middleware");
+
+      expect(chain.hasMiddleware("existing-middleware")).toBeTruthy();
+      expect(chain.hasMiddleware("non-existent")).toBeFalsy();
+    });
+
+    it("应该检查错误处理中间件是否存在", () => {
+      const chain = new MiddlewareChain();
+
+      chain.useError(async (ctx, error, next) => {
+        await next();
+      }, "existing-error-handler");
+
+      expect(chain.hasErrorMiddleware("existing-error-handler")).toBeTruthy();
+      expect(chain.hasErrorMiddleware("non-existent")).toBeFalsy();
+    });
+
+    it("应该列出所有中间件名称", () => {
+      const chain = new MiddlewareChain();
+
+      chain.use(async (ctx, next) => {
+        await next();
+      }, {}, "middleware-a");
+
+      chain.use(async (ctx, next) => {
+        await next();
+      }, {}, "middleware-b");
+
+      chain.use(async (ctx, next) => {
+        await next();
+      }, {}, "middleware-c");
+
+      const names = chain.listMiddlewares();
+      expect(names).toEqual(["middleware-a", "middleware-b", "middleware-c"]);
+    });
+
+    it("应该列出所有错误处理中间件名称", () => {
+      const chain = new MiddlewareChain();
+
+      chain.useError(async (ctx, error, next) => {
+        await next();
+      }, "error-a");
+
+      chain.useError(async (ctx, error, next) => {
+        await next();
+      }, "error-b");
+
+      const names = chain.listErrorMiddlewares();
+      expect(names).toEqual(["error-a", "error-b"]);
+    });
+  });
+
+  describe("插入中间件", () => {
+    it("应该在指定中间件之前插入", async () => {
+      const chain = new MiddlewareChain();
+      const order: string[] = [];
+
+      chain.use(async (ctx, next) => {
+        order.push("first");
+        await next();
+      }, {}, "first");
+
+      chain.use(async (ctx, next) => {
+        order.push("last");
+        await next();
+      }, {}, "last");
+
+      // 在 last 之前插入
+      const inserted = chain.insertBefore("last", async (ctx, next) => {
+        order.push("middle");
+        await next();
+      }, undefined, "middle");
+
+      expect(inserted).toBeTruthy();
+      expect(chain.listMiddlewares()).toEqual(["first", "middle", "last"]);
+
+      await chain.execute({});
+      expect(order).toEqual(["first", "middle", "last"]);
+    });
+
+    it("应该在指定中间件之后插入", async () => {
+      const chain = new MiddlewareChain();
+      const order: string[] = [];
+
+      chain.use(async (ctx, next) => {
+        order.push("first");
+        await next();
+      }, {}, "first");
+
+      chain.use(async (ctx, next) => {
+        order.push("last");
+        await next();
+      }, {}, "last");
+
+      // 在 first 之后插入
+      const inserted = chain.insertAfter("first", async (ctx, next) => {
+        order.push("middle");
+        await next();
+      }, undefined, "middle");
+
+      expect(inserted).toBeTruthy();
+      expect(chain.listMiddlewares()).toEqual(["first", "middle", "last"]);
+
+      await chain.execute({});
+      expect(order).toEqual(["first", "middle", "last"]);
+    });
+
+    it("应该返回 false 如果目标中间件不存在（insertBefore）", () => {
+      const chain = new MiddlewareChain();
+
+      const inserted = chain.insertBefore("non-existent", async (ctx, next) => {
+        await next();
+      });
+
+      expect(inserted).toBeFalsy();
+    });
+
+    it("应该返回 false 如果目标中间件不存在（insertAfter）", () => {
+      const chain = new MiddlewareChain();
+
+      const inserted = chain.insertAfter("non-existent", async (ctx, next) => {
+        await next();
+      });
+
+      expect(inserted).toBeFalsy();
+    });
+
+    it("应该抛出错误如果插入的中间件名称已存在", () => {
+      const chain = new MiddlewareChain();
+
+      chain.use(async (ctx, next) => {
+        await next();
+      }, {}, "existing");
+
+      chain.use(async (ctx, next) => {
+        await next();
+      }, {}, "target");
+
+      let error: Error | null = null;
+      try {
+        chain.insertBefore("target", async (ctx, next) => {
+          await next();
+        }, undefined, "existing");
+      } catch (e) {
+        error = e as Error;
+      }
+
+      expect(error).not.toBeNull();
+      expect(error?.message).toContain("已存在");
+    });
+  });
+
+  describe("matchCondition 函数", () => {
+    it("应该匹配路径前缀", () => {
+      const condition = { path: "/api" };
+      expect(matchCondition(condition, { path: "/api/users" })).toBeTruthy();
+      expect(matchCondition(condition, { path: "/other" })).toBeFalsy();
+    });
+
+    it("应该匹配正则表达式", () => {
+      const condition = { path: /^\/api\/v\d+/ };
+      expect(matchCondition(condition, { path: "/api/v1/users" })).toBeTruthy();
+      expect(matchCondition(condition, { path: "/api/users" })).toBeFalsy();
+    });
+
+    it("应该匹配函数条件", () => {
+      const condition = { path: (p: string) => p.length > 10 };
+      expect(matchCondition(condition, { path: "/long/path/here" })).toBeTruthy();
+      expect(matchCondition(condition, { path: "/short" })).toBeFalsy();
+    });
+
+    it("应该匹配方法（不区分大小写）", () => {
+      const condition = { method: "GET" };
+      expect(matchCondition(condition, { method: "get" })).toBeTruthy();
+      expect(matchCondition(condition, { method: "GET" })).toBeTruthy();
+      expect(matchCondition(condition, { method: "POST" })).toBeFalsy();
+    });
+
+    it("应该匹配方法数组", () => {
+      const condition = { method: ["GET", "POST"] };
+      expect(matchCondition(condition, { method: "GET" })).toBeTruthy();
+      expect(matchCondition(condition, { method: "post" })).toBeTruthy();
+      expect(matchCondition(condition, { method: "PUT" })).toBeFalsy();
+    });
+
+    it("应该支持自定义 match 函数", () => {
+      const condition = {
+        match: (ctx: MiddlewareContext) => ctx.path === "/special",
+      };
+      expect(matchCondition(condition, { path: "/special" })).toBeTruthy();
+      expect(matchCondition(condition, { path: "/other" })).toBeFalsy();
+    });
+  });
+});
+
+describe("MiddlewareManager", () => {
+  describe("创建和初始化", () => {
+    it("应该创建中间件管理器实例", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+      expect(manager).toBeInstanceOf(MiddlewareManager);
+    });
+
+    it("应该使用 createMiddlewareManager 创建实例", () => {
+      const container = new ServiceContainer();
+      const manager = createMiddlewareManager(container);
+      expect(manager).toBeInstanceOf(MiddlewareManager);
+    });
+
+    it("应该将管理器注册到服务容器", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+      expect(container.has("middlewareManager")).toBeTruthy();
+    });
+  });
+
+  describe("中间件注册", () => {
+    it("应该注册中间件", async () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+      let executed = false;
+
+      manager.register({
+        name: "test-middleware",
+        handler: async (ctx, next) => {
+          executed = true;
+          await next();
+        },
+      });
+
+      expect(manager.has("test-middleware")).toBeTruthy();
+      await manager.execute({});
+      expect(executed).toBeTruthy();
+    });
+
+    it("应该拒绝重复注册同名中间件", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "duplicate",
+        handler: async (ctx, next) => await next(),
+      });
+
+      let error: Error | null = null;
+      try {
+        manager.register({
+          name: "duplicate",
+          handler: async (ctx, next) => await next(),
+        });
+      } catch (e) {
+        error = e as Error;
+      }
+
+      expect(error).not.toBeNull();
+      expect(error?.message).toContain("已存在");
+    });
+
+    it("应该注册错误处理中间件", async () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+      let errorHandled = false;
+
+      manager.register({
+        name: "error-thrower",
+        handler: async () => {
+          throw new Error("测试错误");
+        },
+      });
+
+      manager.registerError({
+        name: "error-handler",
+        handler: async (ctx, error, next) => {
+          errorHandled = true;
+          await next();
+        },
+      });
+
+      await manager.execute({});
+      expect(errorHandled).toBeTruthy();
+    });
+
+    it("应该批量注册中间件并按优先级排序", async () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+      const order: string[] = [];
+
+      manager.registerAll([
+        {
+          name: "low-priority",
+          priority: 200,
+          handler: async (ctx, next) => {
+            order.push("low");
+            await next();
+          },
+        },
+        {
+          name: "high-priority",
+          priority: 50,
+          handler: async (ctx, next) => {
+            order.push("high");
+            await next();
+          },
+        },
+        {
+          name: "medium-priority",
+          priority: 100,
+          handler: async (ctx, next) => {
+            order.push("medium");
+            await next();
+          },
+        },
+      ]);
+
+      await manager.execute({});
+      expect(order).toEqual(["high", "medium", "low"]);
+    });
+  });
+
+  describe("中间件管理", () => {
+    it("应该移除中间件", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "to-remove",
+        handler: async (ctx, next) => await next(),
+      });
+
+      expect(manager.has("to-remove")).toBeTruthy();
+
+      const removed = manager.remove("to-remove");
+      expect(removed).toBeTruthy();
+      expect(manager.has("to-remove")).toBeFalsy();
+    });
+
+    it("应该返回 false 如果移除不存在的中间件", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      const removed = manager.remove("non-existent");
+      expect(removed).toBeFalsy();
+    });
+
+    it("应该获取中间件定义", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "my-middleware",
+        priority: 50,
+        handler: async (ctx, next) => await next(),
+      });
+
+      const definition = manager.get("my-middleware");
+      expect(definition).not.toBeUndefined();
+      expect(definition?.name).toBe("my-middleware");
+      expect(definition?.priority).toBe(50);
+    });
+
+    it("应该列出所有中间件名称", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "a",
+        handler: async (ctx, next) => await next(),
+      });
+      manager.register({
+        name: "b",
+        handler: async (ctx, next) => await next(),
+      });
+      manager.register({
+        name: "c",
+        handler: async (ctx, next) => await next(),
+      });
+
+      const names = manager.list();
+      expect(names).toContain("a");
+      expect(names).toContain("b");
+      expect(names).toContain("c");
+    });
+  });
+
+  describe("多链管理", () => {
+    it("应该支持多个中间件链", async () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+      const order: string[] = [];
+
+      manager.register({
+        name: "default-middleware",
+        chain: "default",
+        handler: async (ctx, next) => {
+          order.push("default");
+          await next();
+        },
+      });
+
+      manager.register({
+        name: "api-middleware",
+        chain: "api",
+        handler: async (ctx, next) => {
+          order.push("api");
+          await next();
+        },
+      });
+
+      await manager.execute({}, "default");
+      expect(order).toEqual(["default"]);
+
+      order.length = 0;
+      await manager.execute({}, "api");
+      expect(order).toEqual(["api"]);
+    });
+
+    it("应该列出所有中间件链名称", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "m1",
+        chain: "chain-a",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.register({
+        name: "m2",
+        chain: "chain-b",
+        handler: async (ctx, next) => await next(),
+      });
+
+      const chains = manager.listChains();
+      expect(chains).toContain("chain-a");
+      expect(chains).toContain("chain-b");
+    });
+
+    it("应该按链列出中间件", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "a1",
+        chain: "chain-a",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.register({
+        name: "a2",
+        chain: "chain-a",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.register({
+        name: "b1",
+        chain: "chain-b",
+        handler: async (ctx, next) => await next(),
+      });
+
+      expect(manager.listByChain("chain-a")).toEqual(["a1", "a2"]);
+      expect(manager.listByChain("chain-b")).toEqual(["b1"]);
+    });
+
+    it("应该将中间件链注册到服务容器", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "test",
+        chain: "my-chain",
+        handler: async (ctx, next) => await next(),
+      });
+
+      expect(container.has("middleware:my-chain")).toBeTruthy();
+    });
+  });
+
+  describe("性能监控", () => {
+    it("应该启用和禁用性能监控", async () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "test",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.enablePerformanceMonitoring();
+      await manager.execute({});
+
+      const stats = manager.getStats();
+      expect(stats.length).toBe(1);
+      expect(stats[0].name).toBe("test");
+
+      manager.clearStats();
+      expect(manager.getStats().length).toBe(0);
+
+      manager.disablePerformanceMonitoring();
+    });
+  });
+
+  describe("清理和销毁", () => {
+    it("应该清空指定链", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "a",
+        chain: "chain-a",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.register({
+        name: "b",
+        chain: "chain-b",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.clearChain("chain-a");
+
+      expect(manager.has("a")).toBeFalsy();
+      expect(manager.has("b")).toBeTruthy();
+    });
+
+    it("应该清空所有中间件", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "a",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.register({
+        name: "b",
+        handler: async (ctx, next) => await next(),
+      });
+
+      expect(manager.getMiddlewareCount()).toBe(2);
+
+      manager.clear();
+      expect(manager.getMiddlewareCount()).toBe(0);
+    });
+
+    it("应该销毁管理器", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      manager.register({
+        name: "test",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.dispose();
+      expect(manager.getMiddlewareCount()).toBe(0);
+      expect(manager.getChainCount()).toBe(0);
+    });
+  });
+
+  describe("统计信息", () => {
+    it("应该获取中间件总数", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      expect(manager.getMiddlewareCount()).toBe(0);
+
+      manager.register({
+        name: "a",
+        handler: async (ctx, next) => await next(),
+      });
+
+      expect(manager.getMiddlewareCount()).toBe(1);
+    });
+
+    it("应该获取中间件链总数", () => {
+      const container = new ServiceContainer();
+      const manager = new MiddlewareManager(container);
+
+      expect(manager.getChainCount()).toBe(0);
+
+      manager.register({
+        name: "a",
+        chain: "chain-1",
+        handler: async (ctx, next) => await next(),
+      });
+
+      manager.register({
+        name: "b",
+        chain: "chain-2",
+        handler: async (ctx, next) => await next(),
+      });
+
+      expect(manager.getChainCount()).toBe(2);
     });
   });
 });
