@@ -1,298 +1,294 @@
-# @dreamer/middleware 测试报告
+# @dreamer/middleware Test Report
 
-## 📋 测试概览
+## 📋 Test Overview
 
-| 项目             | 值                             |
-| ---------------- | ------------------------------ |
-| 测试库版本       | 1.0.0-beta.3                   |
-| 运行时适配器版本 | @dreamer/service@^1.0.0-beta.3 |
-| 测试框架         | @dreamer/test@^1.0.0-beta.39   |
-| 测试时间         | 2026-01-30                     |
-| 测试环境         | Deno 2.x / Bun 1.x             |
-
----
-
-## 📊 测试结果
-
-### 总体统计
-
-| 指标         | 数值  |
-| ------------ | ----- |
-| 测试文件数   | 1     |
-| 测试用例总数 | 75    |
-| 通过用例数   | 75    |
-| 失败用例数   | 0     |
-| 通过率       | 100%  |
-| 测试执行时间 | ~70ms |
-
-### 测试文件统计
-
-| 文件名        | 测试用例数 | 状态        |
-| ------------- | ---------- | ----------- |
-| `mod.test.ts` | 75         | ✅ 全部通过 |
+| Item | Value |
+|------|-------|
+| Test Library Version | 1.0.0-beta.3 |
+| Runtime Adapter Version | @dreamer/service@^1.0.0-beta.3 |
+| Test Framework | @dreamer/test@^1.0.0-beta.39 |
+| Test Date | 2026-01-30 |
+| Test Environment | Deno 2.x / Bun 1.x |
 
 ---
 
-## 🔍 功能测试详情
+## 📊 Test Results
 
-### 1. MiddlewareChain 基础功能 (mod.test.ts) - 43 个测试
+### Overall Statistics
 
-#### 1.1 use() 中间件注册
+| Metric | Value |
+|--------|-------|
+| Test Files | 1 |
+| Total Test Cases | 75 |
+| Passed | 75 |
+| Failed | 0 |
+| Pass Rate | 100% |
+| Execution Time | ~70ms |
 
-- ✅ 应该注册中间件
-- ✅ 应该按顺序执行中间件
-- ✅ 应该支持 use(path, middleware) 形式
-- ✅ 应该支持 use(path, middleware, name) 形式
-- ✅ 应该支持 use(middleware, name) 形式
-- ✅ 应该支持中间件名称
+### Test File Statistics
 
-#### 1.2 条件匹配
-
-- ✅ 应该根据路径匹配中间件（字符串）
-- ✅ 应该根据路径匹配中间件（正则表达式）
-- ✅ 应该根据路径匹配中间件（函数）
-- ✅ 应该根据方法匹配中间件（字符串）
-- ✅ 应该根据方法匹配中间件（数组）
-- ✅ 应该根据方法匹配中间件（函数）
-- ✅ 应该支持自定义匹配函数
-- ✅ 应该支持组合条件（路径和方法）
-- ✅ 应该在没有匹配条件时执行所有中间件
-
-#### 1.3 错误处理
-
-- ✅ 应该捕获中间件错误
-- ✅ 应该在没有错误处理中间件时抛出错误
-- ✅ 应该支持多个错误处理中间件
-- ✅ 应该处理错误处理中间件本身的错误
-- ✅ 应该在上下文有错误时停止执行
-
-#### 1.4 性能监控
-
-- ✅ 应该启用和禁用性能监控
-- ✅ 应该记录性能统计
-- ✅ 应该记录错误统计
-- ✅ 应该清空性能统计
-
-#### 1.5 工具方法
-
-- ✅ 应该获取中间件数量
-- ✅ 应该获取错误处理中间件数量
-- ✅ 应该清空所有中间件
-
-#### 1.6 辅助函数
-
-- ✅ 应该使用 createMiddlewareChain 创建实例
-- ✅ 应该使用 createMiddleware 创建中间件
-- ✅ 应该使用 matchPath 创建路径匹配条件
-- ✅ 应该使用 matchMethod 创建方法匹配条件
-- ✅ 应该使用 matchMethod 支持方法数组
-- ✅ 应该使用 combineConditions 组合多个条件
-
-#### 1.7 中间件管理（新增）
-
-- ✅ 应该移除中间件
-- ✅ 应该返回 false 如果移除不存在的中间件
-- ✅ 应该移除错误处理中间件
-- ✅ 应该获取中间件
-- ✅ 应该返回 undefined 如果中间件不存在
-- ✅ 应该获取错误处理中间件
-- ✅ 应该检查中间件是否存在
-- ✅ 应该检查错误处理中间件是否存在
-- ✅ 应该列出所有中间件名称
-- ✅ 应该列出所有错误处理中间件名称
-
-#### 1.8 插入中间件（新增）
-
-- ✅ 应该在指定中间件之前插入
-- ✅ 应该在指定中间件之后插入
-- ✅ 应该返回 false 如果目标中间件不存在（insertBefore）
-- ✅ 应该返回 false 如果目标中间件不存在（insertAfter）
-- ✅ 应该抛出错误如果插入的中间件名称已存在
-
-#### 1.9 matchCondition 函数（新增）
-
-- ✅ 应该匹配路径前缀
-- ✅ 应该匹配正则表达式
-- ✅ 应该匹配函数条件
-- ✅ 应该匹配方法（不区分大小写）
-- ✅ 应该匹配方法数组
-- ✅ 应该支持自定义 match 函数
-
-### 2. MiddlewareManager（新增）- 22 个测试
-
-#### 2.1 创建和初始化
-
-- ✅ 应该创建中间件管理器实例
-- ✅ 应该使用 createMiddlewareManager 创建实例
-- ✅ 应该将管理器注册到服务容器
-
-#### 2.2 中间件注册
-
-- ✅ 应该注册中间件
-- ✅ 应该拒绝重复注册同名中间件
-- ✅ 应该注册错误处理中间件
-- ✅ 应该批量注册中间件并按优先级排序
-
-#### 2.3 中间件管理
-
-- ✅ 应该移除中间件
-- ✅ 应该返回 false 如果移除不存在的中间件
-- ✅ 应该获取中间件定义
-- ✅ 应该列出所有中间件名称
-
-#### 2.4 多链管理
-
-- ✅ 应该支持多个中间件链
-- ✅ 应该列出所有中间件链名称
-- ✅ 应该按链列出中间件
-- ✅ 应该将中间件链注册到服务容器
-
-#### 2.5 性能监控
-
-- ✅ 应该启用和禁用性能监控
-
-#### 2.6 清理和销毁
-
-- ✅ 应该清空指定链
-- ✅ 应该清空所有中间件
-- ✅ 应该销毁管理器
-
-#### 2.7 统计信息
-
-- ✅ 应该获取中间件总数
-- ✅ 应该获取中间件链总数
+| File | Test Cases | Status |
+|------|------------|--------|
+| `mod.test.ts` | 75 | ✅ All passed |
 
 ---
 
-## 📈 测试覆盖分析
+## 🔍 Functional Test Details
 
-### 接口方法覆盖
+### 1. MiddlewareChain Basic Functionality (mod.test.ts) - 43 tests
 
-#### MiddlewareChain 类
+#### 1.1 use() Middleware Registration
 
-| 方法                           | 覆盖状态 |
-| ------------------------------ | -------- |
-| use()                          | ✅       |
-| useError()                     | ✅       |
-| execute()                      | ✅       |
-| enablePerformanceMonitoring()  | ✅       |
-| disablePerformanceMonitoring() | ✅       |
-| getStats()                     | ✅       |
-| clearStats()                   | ✅       |
-| clear()                        | ✅       |
-| getMiddlewareCount()           | ✅       |
-| getErrorMiddlewareCount()      | ✅       |
-| remove()                       | ✅       |
-| removeError()                  | ✅       |
-| getMiddleware()                | ✅       |
-| getErrorMiddleware()           | ✅       |
-| hasMiddleware()                | ✅       |
-| hasErrorMiddleware()           | ✅       |
-| listMiddlewares()              | ✅       |
-| listErrorMiddlewares()         | ✅       |
-| insertBefore()                 | ✅       |
-| insertAfter()                  | ✅       |
+- ✅ Register middleware
+- ✅ Execute middleware in order
+- ✅ Support use(path, middleware) form
+- ✅ Support use(path, middleware, name) form
+- ✅ Support use(middleware, name) form
+- ✅ Support middleware names
 
-#### MiddlewareManager 类
+#### 1.2 Condition Matching
 
-| 方法                           | 覆盖状态 |
-| ------------------------------ | -------- |
-| register()                     | ✅       |
-| registerError()                | ✅       |
-| registerAll()                  | ✅       |
-| remove()                       | ✅       |
-| has()                          | ✅       |
-| get()                          | ✅       |
-| list()                         | ✅       |
-| listByChain()                  | ✅       |
-| listChains()                   | ✅       |
-| execute()                      | ✅       |
-| getChain()                     | ✅       |
-| getStats()                     | ✅       |
-| clearStats()                   | ✅       |
-| clearChain()                   | ✅       |
-| clear()                        | ✅       |
-| enablePerformanceMonitoring()  | ✅       |
-| disablePerformanceMonitoring() | ✅       |
-| getMiddlewareCount()           | ✅       |
-| getChainCount()                | ✅       |
-| dispose()                      | ✅       |
+- ✅ Match middleware by path (string)
+- ✅ Match middleware by path (regex)
+- ✅ Match middleware by path (function)
+- ✅ Match middleware by method (string)
+- ✅ Match middleware by method (array)
+- ✅ Match middleware by method (function)
+- ✅ Support custom match function
+- ✅ Support combined conditions (path and method)
+- ✅ Execute all middleware when no match condition
 
-#### 辅助函数
+#### 1.3 Error Handling
 
-| 函数                      | 覆盖状态 |
-| ------------------------- | -------- |
-| createMiddlewareChain()   | ✅       |
-| createMiddleware()        | ✅       |
-| matchCondition()          | ✅       |
-| matchPath()               | ✅       |
-| matchMethod()             | ✅       |
-| combineConditions()       | ✅       |
-| createMiddlewareManager() | ✅       |
+- ✅ Catch middleware errors
+- ✅ Throw when no error handler middleware
+- ✅ Support multiple error handler middlewares
+- ✅ Handle errors in error handler middleware itself
+- ✅ Stop execution when ctx.error is set
 
-### 边界情况覆盖
+#### 1.4 Performance Monitoring
 
-| 边界情况           | 覆盖状态 |
-| ------------------ | -------- |
-| 空中间件链         | ✅       |
-| 不存在的中间件     | ✅       |
-| 重复注册           | ✅       |
-| 中间件执行顺序     | ✅       |
-| ctx.error 停止执行 | ✅       |
-| 条件不匹配时跳过   | ✅       |
-| 多链隔离           | ✅       |
-| 优先级排序         | ✅       |
-| 插入位置验证       | ✅       |
-| 名称冲突检测       | ✅       |
+- ✅ Enable and disable performance monitoring
+- ✅ Record performance stats
+- ✅ Record error stats
+- ✅ Clear performance stats
 
-### 错误处理覆盖
+#### 1.5 Utility Methods
 
-| 错误场景               | 覆盖状态 |
-| ---------------------- | -------- |
-| 中间件抛出错误         | ✅       |
-| 错误处理中间件抛出错误 | ✅       |
-| 无错误处理中间件       | ✅       |
-| 重复注册错误           | ✅       |
-| 目标中间件不存在       | ✅       |
+- ✅ Get middleware count
+- ✅ Get error middleware count
+- ✅ Clear all middleware
+
+#### 1.6 Helper Functions
+
+- ✅ Create instance with createMiddlewareChain
+- ✅ Create middleware with createMiddleware
+- ✅ Create path match condition with matchPath
+- ✅ Create method match condition with matchMethod
+- ✅ Support method array with matchMethod
+- ✅ Combine multiple conditions with combineConditions
+
+#### 1.7 Middleware Management (new)
+
+- ✅ Remove middleware
+- ✅ Return false when removing non-existent middleware
+- ✅ Remove error handler middleware
+- ✅ Get middleware
+- ✅ Return undefined when middleware does not exist
+- ✅ Get error handler middleware
+- ✅ Check if middleware exists
+- ✅ Check if error handler middleware exists
+- ✅ List all middleware names
+- ✅ List all error handler middleware names
+
+#### 1.8 Insert Middleware (new)
+
+- ✅ Insert before specified middleware
+- ✅ Insert after specified middleware
+- ✅ Return false when target middleware does not exist (insertBefore)
+- ✅ Return false when target middleware does not exist (insertAfter)
+- ✅ Throw when inserted middleware name already exists
+
+#### 1.9 matchCondition Function (new)
+
+- ✅ Match path prefix
+- ✅ Match regex
+- ✅ Match function condition
+- ✅ Match method (case-insensitive)
+- ✅ Match method array
+- ✅ Support custom match function
+
+### 2. MiddlewareManager (new) - 22 tests
+
+#### 2.1 Creation and Initialization
+
+- ✅ Create middleware manager instance
+- ✅ Create instance with createMiddlewareManager
+- ✅ Register manager to service container
+
+#### 2.2 Middleware Registration
+
+- ✅ Register middleware
+- ✅ Reject duplicate registration with same name
+- ✅ Register error handler middleware
+- ✅ Batch register middleware with priority sorting
+
+#### 2.3 Middleware Management
+
+- ✅ Remove middleware
+- ✅ Return false when removing non-existent middleware
+- ✅ Get middleware definition
+- ✅ List all middleware names
+
+#### 2.4 Multi-Chain Management
+
+- ✅ Support multiple middleware chains
+- ✅ List all middleware chain names
+- ✅ List middleware by chain
+- ✅ Register middleware chain to service container
+
+#### 2.5 Performance Monitoring
+
+- ✅ Enable and disable performance monitoring
+
+#### 2.6 Cleanup and Disposal
+
+- ✅ Clear specified chain
+- ✅ Clear all middleware
+- ✅ Dispose manager
+
+#### 2.7 Statistics
+
+- ✅ Get total middleware count
+- ✅ Get total chain count
 
 ---
 
-## 💡 优点
+## 📈 Coverage Analysis
 
-1. **全面覆盖**: 所有 47 个公共 API 方法都有对应的测试用例
-2. **新功能完整**: 新增的
-   remove、getMiddleware、hasMiddleware、listMiddlewares、insertBefore、insertAfter
-   方法都有测试
-3. **MiddlewareManager**: 完整测试了通过服务容器管理中间件的功能
-4. **多链支持**: 测试了多个命名中间件链的隔离和管理
-5. **优先级排序**: 测试了批量注册时按优先级排序的功能
-6. **ctx.error 停止执行**: 测试了设置 ctx.error 后停止后续中间件执行的新行为
-7. **代码优化**: matchCondition 函数被抽取为共享函数，减少代码重复
+### API Method Coverage
+
+#### MiddlewareChain Class
+
+| Method | Status |
+|--------|--------|
+| use() | ✅ |
+| useError() | ✅ |
+| execute() | ✅ |
+| enablePerformanceMonitoring() | ✅ |
+| disablePerformanceMonitoring() | ✅ |
+| getStats() | ✅ |
+| clearStats() | ✅ |
+| clear() | ✅ |
+| getMiddlewareCount() | ✅ |
+| getErrorMiddlewareCount() | ✅ |
+| remove() | ✅ |
+| removeError() | ✅ |
+| getMiddleware() | ✅ |
+| getErrorMiddleware() | ✅ |
+| hasMiddleware() | ✅ |
+| hasErrorMiddleware() | ✅ |
+| listMiddlewares() | ✅ |
+| listErrorMiddlewares() | ✅ |
+| insertBefore() | ✅ |
+| insertAfter() | ✅ |
+
+#### MiddlewareManager Class
+
+| Method | Status |
+|--------|--------|
+| register() | ✅ |
+| registerError() | ✅ |
+| registerAll() | ✅ |
+| remove() | ✅ |
+| has() | ✅ |
+| get() | ✅ |
+| list() | ✅ |
+| listByChain() | ✅ |
+| listChains() | ✅ |
+| execute() | ✅ |
+| getChain() | ✅ |
+| getStats() | ✅ |
+| clearStats() | ✅ |
+| clearChain() | ✅ |
+| clear() | ✅ |
+| enablePerformanceMonitoring() | ✅ |
+| disablePerformanceMonitoring() | ✅ |
+| getMiddlewareCount() | ✅ |
+| getChainCount() | ✅ |
+| dispose() | ✅ |
+
+#### Helper Functions
+
+| Function | Status |
+|----------|--------|
+| createMiddlewareChain() | ✅ |
+| createMiddleware() | ✅ |
+| matchCondition() | ✅ |
+| matchPath() | ✅ |
+| matchMethod() | ✅ |
+| combineConditions() | ✅ |
+| createMiddlewareManager() | ✅ |
+
+### Edge Case Coverage
+
+| Edge Case | Status |
+|-----------|--------|
+| Empty middleware chain | ✅ |
+| Non-existent middleware | ✅ |
+| Duplicate registration | ✅ |
+| Middleware execution order | ✅ |
+| ctx.error stops execution | ✅ |
+| Skip when condition not matched | ✅ |
+| Multi-chain isolation | ✅ |
+| Priority sorting | ✅ |
+| Insert position validation | ✅ |
+| Name conflict detection | ✅ |
+
+### Error Handling Coverage
+
+| Error Scenario | Status |
+|----------------|--------|
+| Middleware throws error | ✅ |
+| Error handler middleware throws | ✅ |
+| No error handler middleware | ✅ |
+| Duplicate registration error | ✅ |
+| Target middleware does not exist | ✅ |
 
 ---
 
-## 📊 结论
+## 💡 Strengths
 
-`@dreamer/middleware`
-中间件库的测试覆盖全面，所有核心功能和新增功能都有对应的测试用例。
-
-### 测试质量评估
-
-- ✅ **功能完整性**: 所有功能都已实现并测试
-- ✅ **代码质量**: 代码结构清晰，错误处理完善
-- ✅ **稳定性**: 无内存泄漏，无资源泄漏
-- ✅ **可维护性**: 测试用例清晰，易于维护和扩展
-- ✅ **MiddlewareManager**: 通过服务容器管理中间件功能完整且稳定
-
-### 发布建议
-
-基于测试结果，建议：
-
-1. ✅ **可以发布**: 所有 75 个测试通过，功能完整
-2. ✅ **文档完善**: 已更新 README 文档
-3. ✅ **示例代码**: 已提供完整的使用示例
+1. **Comprehensive coverage**: All 47 public API methods have corresponding test cases
+2. **New features complete**: New methods remove, getMiddleware, hasMiddleware, listMiddlewares, insertBefore, insertAfter are all tested
+3. **MiddlewareManager**: Full test coverage for managing middleware via service container
+4. **Multi-chain support**: Tests isolation and management of multiple named middleware chains
+5. **Priority sorting**: Tests priority-based sorting on batch registration
+6. **ctx.error stops execution**: Tests new behavior of stopping subsequent middleware when ctx.error is set
+7. **Code optimization**: matchCondition extracted as shared function to reduce duplication
 
 ---
 
-**报告生成时间**: 2026-01-30 **测试执行人**: 自动化测试系统 **审核状态**: ✅
-已通过
+## 📊 Conclusion
+
+`@dreamer/middleware` has comprehensive test coverage; all core and new features have corresponding test cases.
+
+### Test Quality Assessment
+
+- ✅ **Feature completeness**: All features implemented and tested
+- ✅ **Code quality**: Clear structure, solid error handling
+- ✅ **Stability**: No memory leaks, no resource leaks
+- ✅ **Maintainability**: Clear test cases, easy to maintain and extend
+- ✅ **MiddlewareManager**: Middleware management via service container is complete and stable
+
+### Release Recommendation
+
+Based on test results:
+
+1. ✅ **Ready to release**: All 75 tests passed, features complete
+2. ✅ **Documentation**: README updated
+3. ✅ **Examples**: Complete usage examples provided
+
+---
+
+**Report generated**: 2026-01-30 | **Executor**: Automated test system | **Status**: ✅ Passed
