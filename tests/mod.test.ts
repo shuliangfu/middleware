@@ -1,9 +1,12 @@
 /**
  * @fileoverview MiddlewareChain 测试
+ *
+ * 测试前初始化 i18n 并设置为 zh-CN，以便错误信息为中文。
  */
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { ServiceContainer } from "@dreamer/service";
+import { initMiddlewareI18n, setMiddlewareLocale } from "../src/i18n.ts";
 import {
   combineConditions,
   createMiddleware,
@@ -16,6 +19,9 @@ import {
   MiddlewareContext,
   MiddlewareManager,
 } from "../src/mod.ts";
+
+initMiddlewareI18n();
+setMiddlewareLocale("zh-CN");
 
 describe("MiddlewareChain", () => {
   describe("use", () => {

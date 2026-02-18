@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "middlewareAlreadyExists": "Middleware \"{name}\" already exists, cannot register twice.",
+    "errorMiddlewareAlreadyExists": "Error-handling middleware \"{name}\" already exists, cannot register twice."
+  }
+}

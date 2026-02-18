@@ -38,6 +38,8 @@
 
 import type { ServiceContainer } from "@dreamer/service";
 
+import { $tr } from "./i18n.ts";
+
 /**
  * 中间件上下文接口
  * 可以扩展以包含特定场景的数据（如 HTTP 请求、WebSocket 连接等）
@@ -283,7 +285,7 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
     // 检查是否重复注册
     if (this.middlewares.some((m) => m.name === middlewareName)) {
       throw new Error(
-        `中间件 "${middlewareName}" 已存在，不能重复注册`,
+        $tr("errors.middlewareAlreadyExists", { name: middlewareName }),
       );
     }
 
@@ -309,7 +311,7 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
     // 检查是否重复注册
     if (this.errorMiddlewares.some((m) => m.name === middlewareName)) {
       throw new Error(
-        `错误处理中间件 "${middlewareName}" 已存在，不能重复注册`,
+        $tr("errors.errorMiddlewareAlreadyExists", { name: middlewareName }),
       );
     }
 
@@ -641,7 +643,9 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
 
     // 检查是否重复注册
     if (this.middlewares.some((m) => m.name === middlewareName)) {
-      throw new Error(`中间件 "${middlewareName}" 已存在，不能重复注册`);
+      throw new Error(
+        $tr("errors.middlewareAlreadyExists", { name: middlewareName }),
+      );
     }
 
     this.middlewares.splice(targetIndex, 0, {
@@ -682,7 +686,9 @@ export class MiddlewareChain<T extends MiddlewareContext = MiddlewareContext> {
 
     // 检查是否重复注册
     if (this.middlewares.some((m) => m.name === middlewareName)) {
-      throw new Error(`中间件 "${middlewareName}" 已存在，不能重复注册`);
+      throw new Error(
+        $tr("errors.middlewareAlreadyExists", { name: middlewareName }),
+      );
     }
 
     this.middlewares.splice(targetIndex + 1, 0, {
@@ -912,7 +918,7 @@ export class MiddlewareManager<
 
     // 检查是否重复注册
     if (this.definitions.has(name)) {
-      throw new Error(`中间件 "${name}" 已存在，不能重复注册`);
+      throw new Error($tr("errors.middlewareAlreadyExists", { name }));
     }
 
     // 保存定义
@@ -1177,3 +1183,5 @@ export function createMiddlewareManager<
 ): MiddlewareManager<T> {
   return new MiddlewareManager<T>(container, options);
 }
+
+// i18n 仅包内使用，不对外导出；测试需 init/setLocale 时从 ./i18n.ts 导入

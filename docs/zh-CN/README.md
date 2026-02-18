@@ -3,11 +3,21 @@
 > 一个兼容 Deno 和 Bun
 > 的通用中间件系统，提供中间件链式调用、错误处理、服务容器集成等功能
 
-[English](./README.md) | 中文 (Chinese)
+> [English](../../README.md) | 中文 (Chinese)
 
 [![JSR](https://jsr.io/badges/@dreamer/middleware)](https://jsr.io/@dreamer/middleware)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
 [![Tests](https://img.shields.io/badge/tests-75%20passed-brightgreen)](./TEST_REPORT.md)
+
+---
+
+## 📝 变更日志
+
+### [1.0.1] - 2026-02-19
+
+- **变更**：i18n 翻译方法 `$t` → `$tr`；文档调整至 `docs/en-US/` 与
+  `docs/zh-CN/`；许可证明确为 Apache-2.0。
+- 完整历史：[变更日志](./CHANGELOG.md)
 
 ---
 
@@ -44,7 +54,7 @@ bunx jsr add @dreamer/middleware
 | **客户端** | -                        | ❌ 不支持（中间件是服务端架构模式）    |
 | **依赖**   | @dreamer/service（可选） | 📦 用于 MiddlewareManager 服务容器集成 |
 
-**注意**：@dreamer/middleware 是纯服务端库，不提供客户端子包。
+**注意**：@dreamer/middleware 是纯服务端包，不提供客户端子包。
 
 ---
 
@@ -103,7 +113,7 @@ bunx jsr add @dreamer/middleware
 ## 📐 架构说明
 
 - **中间件系统独立于 HTTP**，保持通用性
-- HTTP 库依赖中间件库来实现中间件功能
+- HTTP 包依赖中间件包来实现中间件功能
 - 这样设计更灵活，中间件系统可以用于多种场景
 - **MiddlewareManager** 提供与服务容器的集成，类似于 PluginManager
 
@@ -931,7 +941,7 @@ interface MiddlewareDefinition<T extends MiddlewareContext> {
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE.md](./LICENSE.md)
+Apache License 2.0 - 详见 [LICENSE](../../LICENSE)
 
 ---
 
