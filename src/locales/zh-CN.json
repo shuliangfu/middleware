@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "middlewareAlreadyExists": "中间件 \"{name}\" 已存在，不能重复注册。",
+    "errorMiddlewareAlreadyExists": "错误处理中间件 \"{name}\" 已存在，不能重复注册。"
+  }
+}
