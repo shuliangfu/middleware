@@ -46,7 +46,8 @@ export function detectLocale(): Locale {
   return DEFAULT_LOCALE;
 }
 
-export function initMiddlewareI18n(): void {
+/** 内部初始化，导入 i18n 时自动执行，不导出 */
+function initMiddlewareI18n(): void {
   if (middlewareI18n) return;
   const i18n = createI18n({
     defaultLocale: DEFAULT_LOCALE,
@@ -57,6 +58,8 @@ export function initMiddlewareI18n(): void {
   i18n.setLocale(detectLocale());
   middlewareI18n = i18n;
 }
+
+initMiddlewareI18n();
 
 /** Set locale for middleware error messages. Initializes i18n if not yet called. */
 export function setMiddlewareLocale(locale: Locale): void {
@@ -69,6 +72,7 @@ export function $tr(
   params?: Record<string, string | number>,
   lang?: Locale,
 ): string {
+  if (!middlewareI18n) initMiddlewareI18n();
   if (!middlewareI18n) return key;
   if (lang !== undefined) {
     const prev = middlewareI18n.getLocale();

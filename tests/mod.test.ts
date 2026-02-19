@@ -6,7 +6,7 @@
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { ServiceContainer } from "@dreamer/service";
-import { initMiddlewareI18n, setMiddlewareLocale } from "../src/i18n.ts";
+import { setMiddlewareLocale } from "../src/i18n.ts";
 import {
   combineConditions,
   createMiddleware,
@@ -20,7 +20,6 @@ import {
   MiddlewareManager,
 } from "../src/mod.ts";
 
-initMiddlewareI18n();
 setMiddlewareLocale("zh-CN");
 
 describe("MiddlewareChain", () => {
