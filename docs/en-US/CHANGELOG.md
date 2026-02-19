@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.2] - 2026-02-19
+
+### Changed
+
+- **i18n**: i18n now auto-initializes when the module is loaded.
+  `initMiddlewareI18n` is no longer exported; callers do not need to call it.
+  Use `setMiddlewareLocale` when you need to set the locale for middleware
+  messages. The translation function `$tr` initializes i18n on first use if not
+  yet initialized.
+- **Dependencies**: Bumped `@dreamer/runtime-adapter` to ^1.0.15,
+  `@dreamer/service` to ^1.0.2, `@dreamer/test` to ^1.0.10.
+
+---
+
 ## [1.0.1] - 2026-02-19
 
 ### Changed

@@ -1,8 +1,8 @@
 # @dreamer/middleware
 
-> A general-purpose middleware system compatible with Deno and Bun,
-> providing chained middleware execution, error handling, service container
-> integration, and more.
+> A general-purpose middleware system compatible with Deno and Bun, providing
+> chained middleware execution, error handling, service container integration,
+> and more.
 
 > [English](./README.md) (root) | [中文 (Chinese)](./docs/zh-CN/README.md)
 
@@ -14,10 +14,12 @@
 
 ## 📝 Changelog
 
-### [1.0.1] - 2026-02-19
+### [1.0.2] - 2026-02-19
 
-- **Changed**: i18n translation method `$t` → `$tr`; docs reorganized to
-  `docs/en-US/` and `docs/zh-CN/`; license explicitly Apache-2.0.
+- **Changed**: i18n auto-initializes on module load; `initMiddlewareI18n` no
+  longer exported. Use `setMiddlewareLocale` to set locale. Dependencies bumped:
+  @dreamer/runtime-adapter ^1.0.15, @dreamer/service ^1.0.2, @dreamer/test
+  ^1.0.10.
 - Full history: [Changelog](./docs/en-US/CHANGELOG.md)
 
 ---
@@ -49,15 +51,16 @@ bunx jsr add @dreamer/middleware
 
 ## 🌍 Environment compatibility
 
-| Environment | Version requirement           | Status                                                                 |
-| ----------- | ----------------------------- | ---------------------------------------------------------------------- |
-| **Deno**    | 2.5+                          | ✅ Fully supported                                                     |
-| **Bun**     | 1.0+                          | ✅ Fully supported                                                     |
-| **Server**  | -                             | ✅ Supported (middleware is primarily used on the server)              |
-| **Client**  | -                             | ❌ Not supported (middleware is a server-side architecture pattern)    |
-| **Dependency** | @dreamer/service (optional) | 📦 Used for MiddlewareManager service container integration           |
+| Environment    | Version requirement         | Status                                                              |
+| -------------- | --------------------------- | ------------------------------------------------------------------- |
+| **Deno**       | 2.5+                        | ✅ Fully supported                                                  |
+| **Bun**        | 1.0+                        | ✅ Fully supported                                                  |
+| **Server**     | -                           | ✅ Supported (middleware is primarily used on the server)           |
+| **Client**     | -                           | ❌ Not supported (middleware is a server-side architecture pattern) |
+| **Dependency** | @dreamer/service (optional) | 📦 Used for MiddlewareManager service container integration         |
 
-**Note**: @dreamer/middleware is a server-side-only package and does not provide a client sub-package.
+**Note**: @dreamer/middleware is a server-side-only package and does not provide
+a client sub-package.
 
 ---
 
@@ -79,7 +82,8 @@ bunx jsr add @dreamer/middleware
   - Context object passing
   - Context extension and modification
   - Data sharing between middlewares
-  - When `ctx.error` is set, subsequent middleware execution is automatically stopped
+  - When `ctx.error` is set, subsequent middleware execution is automatically
+    stopped
 
 - **Middleware management** (new):
   - Remove middleware: `remove(name)`
@@ -120,8 +124,8 @@ bunx jsr add @dreamer/middleware
   functionality
 - This design is more flexible; the middleware system can be used in many
   scenarios
-- **MiddlewareManager** provides integration with the service container,
-  similar to PluginManager
+- **MiddlewareManager** provides integration with the service container, similar
+  to PluginManager
 
 ---
 
@@ -488,7 +492,8 @@ Register middleware.
 
 - `middleware`: Middleware function
 - `condition`: Match condition (optional)
-- `name`: Middleware name (optional; used for debugging and performance monitoring)
+- `name`: Middleware name (optional; used for debugging and performance
+  monitoring)
 
 **Example**:
 
@@ -772,7 +777,8 @@ interface MiddlewareStats {
 
 ### MiddlewareManager class
 
-Middleware manager class; manages multiple middleware chains via the service container.
+Middleware manager class; manages multiple middleware chains via the service
+container.
 
 #### Constructor
 
@@ -792,53 +798,53 @@ new MiddlewareManager(
 
 **Options**:
 
-| Option                          | Type      | Default  | Description                    |
-| ------------------------------- | --------- | -------- | ------------------------------ |
-| `enablePerformanceMonitoring`  | `boolean` | `false`  | Whether to enable perf monitoring |
-| `continueOnError`               | `boolean` | `true`   | Whether to continue on error   |
+| Option                        | Type      | Default | Description                       |
+| ----------------------------- | --------- | ------- | --------------------------------- |
+| `enablePerformanceMonitoring` | `boolean` | `false` | Whether to enable perf monitoring |
+| `continueOnError`             | `boolean` | `true`  | Whether to continue on error      |
 
 #### Registration methods
 
-| Method                        | Description                          |
-| ----------------------------- | ------------------------------------ |
-| `register(definition)`        | Register middleware                  |
-| `registerError(definition)`   | Register error-handling middleware   |
-| `registerAll(definitions)`    | Batch register (sorted by priority)  |
+| Method                      | Description                         |
+| --------------------------- | ----------------------------------- |
+| `register(definition)`      | Register middleware                 |
+| `registerError(definition)` | Register error-handling middleware  |
+| `registerAll(definitions)`  | Batch register (sorted by priority) |
 
 #### Management methods
 
-| Method                     | Description                    |
-| -------------------------- | ------------------------------ |
-| `remove(name)`             | Remove middleware              |
-| `has(name)`               | Check if middleware exists     |
-| `get(name)`               | Get middleware definition      |
-| `list()`                  | List all middleware names      |
-| `listByChain(chainName)`  | List middlewares by chain      |
-| `listChains()`            | List all middleware chain names |
+| Method                   | Description                     |
+| ------------------------ | ------------------------------- |
+| `remove(name)`           | Remove middleware               |
+| `has(name)`              | Check if middleware exists      |
+| `get(name)`              | Get middleware definition       |
+| `list()`                 | List all middleware names       |
+| `listByChain(chainName)` | List middlewares by chain       |
+| `listChains()`           | List all middleware chain names |
 
 #### Execution methods
 
-| Method                       | Description                |
-| ---------------------------- | -------------------------- |
-| `execute(ctx, chainName?)`   | Execute specified chain    |
-| `getChain(chainName)`        | Get middleware chain instance |
+| Method                     | Description                   |
+| -------------------------- | ----------------------------- |
+| `execute(ctx, chainName?)` | Execute specified chain       |
+| `getChain(chainName)`      | Get middleware chain instance |
 
 #### Statistics methods
 
-| Method                     | Description              |
-| -------------------------- | ------------------------ |
-| `getStats(chainName?)`     | Get performance stats    |
-| `clearStats(chainName?)`   | Clear performance stats  |
-| `getMiddlewareCount()`     | Get total middleware count |
-| `getChainCount()`          | Get total chain count    |
+| Method                   | Description                |
+| ------------------------ | -------------------------- |
+| `getStats(chainName?)`   | Get performance stats      |
+| `clearStats(chainName?)` | Clear performance stats    |
+| `getMiddlewareCount()`   | Get total middleware count |
+| `getChainCount()`        | Get total chain count      |
 
 #### Cleanup methods
 
-| Method                    | Description              |
-| ------------------------- | ------------------------ |
-| `clearChain(chainName)`   | Clear specified chain    |
-| `clear()`                 | Clear all middleware     |
-| `dispose()`               | Dispose the manager      |
+| Method                  | Description           |
+| ----------------------- | --------------------- |
+| `clearChain(chainName)` | Clear specified chain |
+| `clear()`               | Clear all middleware  |
+| `dispose()`             | Dispose the manager   |
 
 **Example**:
 
@@ -889,23 +895,26 @@ interface MiddlewareDefinition<T extends MiddlewareContext> {
 
 ## 🔧 Design principles
 
-- **Genericity**: Middleware system is independent of HTTP and usable in many scenarios
-- **Flexibility**: Supports condition matching, error handling, performance monitoring, and more
+- **Genericity**: Middleware system is independent of HTTP and usable in many
+  scenarios
+- **Flexibility**: Supports condition matching, error handling, performance
+  monitoring, and more
 - **Type safety**: Full TypeScript typing
 - **Ease of use**: Simple API and multiple calling styles
-- **Service container integration**: MiddlewareManager integrates with @dreamer/service
+- **Service container integration**: MiddlewareManager integrates with
+  @dreamer/service
 
 ---
 
 ## 📊 Test report
 
-| Metric        | Value    |
-| ------------- | -------- |
-| Test date     | 2026-01-30 |
-| Test files    | 1        |
-| Total cases   | 75       |
-| Pass rate     | 100%     |
-| Duration      | ~70ms    |
+| Metric      | Value      |
+| ----------- | ---------- |
+| Test date   | 2026-01-30 |
+| Test files  | 1          |
+| Total cases | 75         |
+| Pass rate   | 100%       |
+| Duration    | ~70ms      |
 
 **Coverage**:
 
@@ -921,17 +930,23 @@ Full test report: [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md).
 
 ## 📝 Notes
 
-1. **Server-only**: The middleware system is a server-side pattern; the client does not need it.
+1. **Server-only**: The middleware system is a server-side pattern; the client
+   does not need it.
 
-2. **ctx.error stops execution**: When `ctx.error` is set, calling `next()` will skip subsequent middlewares.
+2. **ctx.error stops execution**: When `ctx.error` is set, calling `next()` will
+   skip subsequent middlewares.
 
-3. **Unique middleware names**: Each middleware must have a unique name; registering the same name again throws.
+3. **Unique middleware names**: Each middleware must have a unique name;
+   registering the same name again throws.
 
-4. **Priority ordering**: With `registerAll()`, middlewares are ordered by `priority` (lower number runs first).
+4. **Priority ordering**: With `registerAll()`, middlewares are ordered by
+   `priority` (lower number runs first).
 
-5. **Chain isolation**: Different chains are fully isolated and do not affect each other.
+5. **Chain isolation**: Different chains are fully isolated and do not affect
+   each other.
 
-6. **Service container integration**: MiddlewareManager registers itself and its chains in the service container.
+6. **Service container integration**: MiddlewareManager registers itself and its
+   chains in the service container.
 
 7. **Type safety**: Full TypeScript support, including generic context types.
 
