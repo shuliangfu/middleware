@@ -4,13 +4,29 @@
 
 ## 📋 Test Overview
 
-| Item                    | Value                          |
-| ----------------------- | ------------------------------ |
-| Test Library Version    | 1.0.0-beta.3                   |
-| Runtime Adapter Version | @dreamer/service@^1.0.0-beta.3 |
-| Test Framework          | @dreamer/test@^1.0.0-beta.39   |
-| Test Date               | 2026-01-30                     |
-| Test Environment        | Deno 2.x / Bun 1.x             |
+| Item                | Value                                                                  |
+| ------------------- | --------------------------------------------------------------------- |
+| **Package version** | `@dreamer/middleware@1.1.0`                                            |
+| **Command**         | Deno: `deno test -A tests/` · Bun: `bun test tests/` · Node: `npm run test:node` |
+| **Environment**     | Deno 2.9+ / Bun 1.3+ / Node.js 22+                                    |
+| **Test framework**  | `@dreamer/test@^1.2.3`                                                |
+
+---
+
+## 🎯 Test results
+
+### Overall statistics
+
+| Metric          | Value                                |
+| --------------- | ------------------------------------ |
+| **Total tests** | 76 (Deno) / 75 (Bun) / 75 (Node)     |
+| **Passed**      | 76 / 75 / 75                         |
+| **Failed**      | 0 / 0 / 0                            |
+| **Pass rate**   | 100%                                 |
+
+> The Deno test runner counts 1 framework teardown step in the total, so Deno
+> reports 76 while Bun/Node report 75; the business `it()` cases are identical
+> across runtimes, all with 0 failures.
 
 ---
 

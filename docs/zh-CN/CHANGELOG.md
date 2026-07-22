@@ -8,6 +8,32 @@
 
 ---
 
+## [1.1.0] - 2026-07-23
+
+### 新增
+
+- **Node.js 兼容**：middleware 现可在 Node 22+ 运行——`src/` 为纯逻辑（无
+  `Deno.*`、无 `IS_NODE` 分支、无定时器），错误文案经 `@dreamer/i18n` v1.1.2、
+  服务容器集成经 `@dreamer/service` v1.1.0 支持 Node。
+- **Node.js 测试基建**：新增 `tsconfig.json`、`ci.yml`（9-job：3 Deno v2.9 +
+  3 Bun + 3 Node 22），`test:node` 由 `tsx --test --test-force-exit` 驱动；
+  Deno/Bun/Node 共享同一套 `tests/*.test.ts`。
+
+### 变更
+
+- **src/**：无改动（纯逻辑包，`tests/mod.test.ts` 已在模块级调用
+  `setMiddlewareLocale("zh-CN")` 锁定中文文案，CI 英文 locale 下无需额外修复）。
+- **依赖**：`@dreamer/i18n` ^1.1.2、`@dreamer/runtime-adapter` ^1.2.2、
+  `@dreamer/service` ^1.1.0、`@dreamer/test` ^1.2.3。
+- **deno.json**：新增 `minimumDependencyAge: 0`。
+- **.gitignore**：新增 `package-lock.json`。
+
+### 兼容性
+
+- Deno 2.9+ / Bun 1.3+ / Node.js 22+
+
+---
+
 ## [1.0.2] - 2026-02-19
 
 ### 变更
