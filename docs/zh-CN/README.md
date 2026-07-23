@@ -1,23 +1,22 @@
 # @dreamer/middleware
 
-> 一个兼容 Deno 和 Bun
+> 一个兼容 Deno、Bun 和 Node.js
 > 的通用中间件系统，提供中间件链式调用、错误处理、服务容器集成等功能
 
 > [English](../../README.md) | 中文 (Chinese)
 
 [![JSR](https://jsr.io/badges/@dreamer/middleware)](https://jsr.io/@dreamer/middleware)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
-[![Tests](https://img.shields.io/badge/tests-75%20passed-brightgreen)](./TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-75%20passed%20(三端)-brightgreen)](./TEST_REPORT.md)
 
 ---
 
 ## 📝 变更日志
 
-### [1.0.2] - 2026-02-19
+### [1.1.0] - 2026-07-23
 
-- **变更**：i18n 在模块加载时自动初始化，`initMiddlewareI18n` 不再导出；使用
-  `setMiddlewareLocale` 设置语言。依赖升级：@dreamer/runtime-adapter ^1.0.15、
-  @dreamer/service ^1.0.2、@dreamer/test ^1.0.10。
+- **新增**：Node.js 22+ 兼容；三端 CI（Deno/Bun/Node）。纯逻辑包——`src/` 无
+  改动，测试已在模块级锁定 zh-CN locale。
 - 完整历史：[变更日志](./CHANGELOG.md)
 
 ---
@@ -43,14 +42,21 @@ deno add jsr:@dreamer/middleware
 bunx jsr add @dreamer/middleware
 ```
 
+### Node.js
+
+```bash
+npx jsr add @dreamer/middleware
+```
+
 ---
 
 ## 🌍 环境兼容性
 
 | 环境       | 版本要求                 | 状态                                   |
 | ---------- | ------------------------ | -------------------------------------- |
-| **Deno**   | 2.5+                     | ✅ 完全支持                            |
-| **Bun**    | 1.0+                     | ✅ 完全支持                            |
+| **Deno**   | 2.9+                     | ✅ 完全支持                            |
+| **Bun**    | 1.3+                     | ✅ 完全支持                            |
+| **Node.js**| 22+                      | ✅ 完全支持（自 v1.1.0 起）            |
 | **服务端** | -                        | ✅ 支持（中间件系统主要用于服务端）    |
 | **客户端** | -                        | ❌ 不支持（中间件是服务端架构模式）    |
 | **依赖**   | @dreamer/service（可选） | 📦 用于 MiddlewareManager 服务容器集成 |

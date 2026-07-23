@@ -1,25 +1,24 @@
 # @dreamer/middleware
 
-> A general-purpose middleware system compatible with Deno and Bun, providing
-> chained middleware execution, error handling, service container integration,
-> and more.
+> A general-purpose middleware system compatible with Deno, Bun and Node.js,
+> providing chained middleware execution, error handling, service container
+> integration, and more.
 
 > [English](./README.md) (root) | [中文 (Chinese)](./docs/zh-CN/README.md)
 
 [![JSR](https://jsr.io/badges/@dreamer/middleware)](https://jsr.io/@dreamer/middleware)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Tests: 75 passed](https://img.shields.io/badge/Tests-75%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
+[![Tests: 75 passed](https://img.shields.io/badge/Tests-75%20passed%20(3%20runtimes)-brightgreen)](./docs/en-US/TEST_REPORT.md)
 
 ---
 
 ## 📝 Changelog
 
-### [1.0.2] - 2026-02-19
+### [1.1.0] - 2026-07-23
 
-- **Changed**: i18n auto-initializes on module load; `initMiddlewareI18n` no
-  longer exported. Use `setMiddlewareLocale` to set locale. Dependencies bumped:
-  @dreamer/runtime-adapter ^1.0.15, @dreamer/service ^1.0.2, @dreamer/test
-  ^1.0.10.
+- **Added**: Node.js 22+ compatibility; three-runtime CI (Deno/Bun/Node).
+  Pure-logic package — `src/` unchanged; tests already lock zh-CN locale at
+  module level.
 - Full history: [Changelog](./docs/en-US/CHANGELOG.md)
 
 ---
@@ -47,14 +46,21 @@ deno add jsr:@dreamer/middleware
 bunx jsr add @dreamer/middleware
 ```
 
+### Node.js
+
+```bash
+npx jsr add @dreamer/middleware
+```
+
 ---
 
 ## 🌍 Environment compatibility
 
 | Environment    | Version requirement         | Status                                                              |
 | -------------- | --------------------------- | ------------------------------------------------------------------- |
-| **Deno**       | 2.5+                        | ✅ Fully supported                                                  |
-| **Bun**        | 1.0+                        | ✅ Fully supported                                                  |
+| **Deno**       | 2.9+                        | ✅ Fully supported                                                  |
+| **Bun**        | 1.3+                        | ✅ Fully supported                                                  |
+| **Node.js**    | 22+                         | ✅ Fully supported (since v1.1.0)                                   |
 | **Server**     | -                           | ✅ Supported (middleware is primarily used on the server)           |
 | **Client**     | -                           | ❌ Not supported (middleware is a server-side architecture pattern) |
 | **Dependency** | @dreamer/service (optional) | 📦 Used for MiddlewareManager service container integration         |
